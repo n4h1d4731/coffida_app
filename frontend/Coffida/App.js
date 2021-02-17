@@ -1,14 +1,13 @@
 import 'react-native-gesture-handler'
 
-import React, { useState } from 'react'
+import React from 'react'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
 import Locations from './components/locations'
 import Login from './components/login'
+import Signup from './components/signup'
 
 const Stack = createStackNavigator()
 
@@ -19,7 +18,6 @@ const App = () => {
         <Stack.Screen
           name='Login'
           component={Login}
-
           options={
             {
               title: 'Login',
@@ -29,7 +27,25 @@ const App = () => {
               },
               headerStyle: {
                 backgroundColor: '#111111'
-              }
+              },
+              headerTintColor: '#fff'
+            }
+          }
+        />
+        <Stack.Screen
+          name='Signup'
+          component={Signup}
+          options={
+            {
+              title: 'Sign Up',
+              headerTitleAlign: 'center',
+              headerTitleStyle: {
+                color: '#fff'
+              },
+              headerStyle: {
+                backgroundColor: '#111111'
+              },
+              headerTintColor: '#fff'
             }
           }
         />
@@ -45,7 +61,8 @@ const App = () => {
               },
               headerStyle: {
                 backgroundColor: '#111111'
-              }
+              },
+              headerTintColor: '#fff'
             }
           }
         />
