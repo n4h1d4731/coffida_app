@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Image } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -10,7 +10,8 @@ import GlobalStyles from '../GlobalStyles'
 const Login = ({ navigation }) => {
   const [authKey, setAuthKey] = useState('')
 
-  AsyncStorage.getItem('@authKey')
+  useEffect(() => {
+    AsyncStorage.getItem('@authKey')
     .then(res => {
       if (res !== null) {
         setAuthKey(res)
@@ -20,6 +21,7 @@ const Login = ({ navigation }) => {
       console.log('Error loading auth key from local storage...')
       console.log(e)
     })
+  })
 
   return (
     <View style={GlobalStyles.contentWrapper}>
