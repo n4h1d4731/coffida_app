@@ -1,20 +1,21 @@
-import React, { useState } from 'react'
-import { Alert, Button, TextInput, ToastAndroid } from 'react-native'
+import React from 'react'
+import { Button, TextInput, ToastAndroid } from 'react-native'
 
 import { useNavigation } from '@react-navigation/native'
 
+import { AuthContext } from '../App'
+
 import GlobalStyles from '../GlobalStyles'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
+export default function SignInForm () {
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
 
-const LoginForm = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { signIn } = React.useContext(AuthContext)
 
   const navigation = useNavigation()
 
-  const onLogin = () => {
+  const onSignIn = () => {
     if (email === '') {
       ToastAndroid.show('Email must not be empty!', ToastAndroid.SHORT)
       return
@@ -29,37 +30,11 @@ const LoginForm = () => {
       return
     }
 
-    console.log(JSON.stringify({ email: email, password: password }))
-
-    fetch(API_ENDPOINT + '/user/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email: email, password: password })
-    })
-      .then(res => res.json())
-      .then(async res => {
-        try {
-          if (!res.token) {
-            Alert.alert('An error occured when logging in. Please try again.')
-          } else {
-            await AsyncStorage.setItem('@authKey', res.token)
-            navigation.navigate('Locations')
-          }
-        } catch (e) {
-          console.log('Failed to store authKey after login request')
-          console.log(e)
-
-          Alert.alert('An error occured when logging in. Please try again.')
-        }
-      }).catch(e => {
-        Alert.alert(e)
-      })
+    signIn({ email, password })
   }
 
   const onCreateAccount = () => {
-    navigation.navigate('Signup')
+    navigation.navigate('SignUp')
   }
 
   return (
@@ -82,10 +57,8 @@ const LoginForm = () => {
         secureTextEntry
         onChangeText={password => setPassword(password)}
       />
-      <Button title='Login' onPress={onLogin} />
+      <Button title='Login' onPress={onSignIn} />
       <Button title='Create an account' onPress={onCreateAccount} />
     </>
   )
 }
-
-export default LoginForm

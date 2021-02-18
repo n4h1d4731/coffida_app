@@ -1,37 +1,28 @@
-import React, { useEffect } from 'react'
-import { Alert, View, Text, BackHandler } from 'react-native'
+import React from 'react'
+import { View, Text, ActivityIndicator } from 'react-native'
 
-const Location = ({ navigation }) => {
-  useEffect(
-    () =>
-      navigation.addListener('beforeRemove', (e) => {
-        e.preventDefault()
+import HeaderRightOptions from './header-right-options'
 
-        Alert.alert(
-          'Quit App?',
-          'Are you sure you want to quit the application',
-          [
-            {
-              text: 'No',
-              style: 'cancel',
-              onPress: () => {}
-            },
-            {
-              text: 'Yes',
-              style: 'destructive',
-              onPress: () => { BackHandler.exitApp() }
-            }
-          ]
-        )
-      }),
-    [navigation]
-  )
+import GlobalStyles from '../GlobalStyles'
+
+export default function Locations ({ navigation }) {
+  const [isLoading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    // TODO: load all location data here
+  }, [isLoading])
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRightOptions />
+      )
+    })
+  })
 
   return (
-    <View>
-      <Text>Hello World!</Text>
+    <View style={GlobalStyles.contentWrapper}>
+      {isLoading ? (<ActivityIndicator size='large' color='#fff' />) : (<Text>Hello World!</Text>)}
     </View>
   )
 }
-
-export default Location
