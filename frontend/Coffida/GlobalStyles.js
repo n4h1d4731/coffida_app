@@ -27,5 +27,13 @@ module.exports = StyleSheet.create({
   },
   headerButton: {
     padding: 10
+  },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    marginTop: 15
+  },
+  secondaryButtonText: {
+    textAlign: 'center',
+    color: 'white'
   }
 })

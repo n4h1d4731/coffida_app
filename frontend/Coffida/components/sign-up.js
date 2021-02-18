@@ -55,7 +55,7 @@ export default function Signup ({ navigation }) {
 
   return (
     <View style={GlobalStyles.contentWrapper}>
-      <View style={{ flex: 0.7, flexDirection: 'column' }}>
+      <View style={{ flex: 0.9, flexDirection: 'column' }}>
         <TextInput
           style={GlobalStyles.textInput}
           placeholder='First Name'
@@ -97,7 +97,7 @@ export default function Signup ({ navigation }) {
           onChangeText={confirmPassword => setConfirmPassword(confirmPassword)}
         />
       </View>
-      <View style={{ flex: 0.3 }}>
+      <View style={{ flex: 0.1, justifyContent: 'flex-end' }}>
         <Button title='Create Account' onPress={onCreateAccount} />
       </View>
     </View>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, TextInput, ToastAndroid } from 'react-native'
+import { Button, Pressable, Text, TextInput, ToastAndroid } from 'react-native'
 
 import { useNavigation } from '@react-navigation/native'
 
@@ -58,7 +58,9 @@ export default function SignInForm () {
         onChangeText={password => setPassword(password)}
       />
       <Button title='Login' onPress={onSignIn} />
-      <Button title='Create an account' onPress={onCreateAccount} />
+      <Pressable style={GlobalStyles.secondaryButton} onPress={onCreateAccount}>
+        <Text style={GlobalStyles.secondaryButtonText}>Create an account</Text>
+      </Pressable>
     </>
   )
 }
