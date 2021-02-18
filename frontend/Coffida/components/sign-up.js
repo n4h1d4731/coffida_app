@@ -1,21 +1,19 @@
-import React, { useState } from 'react'
-import { Alert, Button, ToastAndroid, View } from 'react-native'
+import React from 'react'
+import { Button, ToastAndroid, View } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 
-import { useNavigation } from '@react-navigation/native'
+import { AuthContext } from '../App'
 
 import GlobalStyles from '../GlobalStyles'
 
-const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
+export default function Signup ({ navigation }) {
+  const [firstName, setFirstName] = React.useState('')
+  const [lastName, setLastName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [confirmPassword, setConfirmPassword] = React.useState('')
 
-const Signup = () => {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-
-  const navigation = useNavigation()
+  const { signUp } = React.useContext(AuthContext)
 
   const onCreateAccount = () => {
     if (firstName === '') {
@@ -44,20 +42,14 @@ const Signup = () => {
       return
     }
 
-    fetch(API_ENDPOINT + '/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ first_name: firstName, last_name: lastName, email: email, password: password })
-    })
-      .then(res => {
-        Alert.alert('Account Created!')
-        navigation.popToTop()
-      })
-      .catch(e => {
-        console.log('Error creating user...')
-        console.log(e)
+    signUp({ firstName: firstName, lastName: lastName, email: email, password: password })
+      .then(() => {
+        ToastAndroid.show('Account Created!', ToastAndroid.LONG)
+        if (navigation.canGoBack()) {
+          navigation.pop()
+        } else {
+          navigation.navigate('SignIn')
+        }
       })
   }
 
@@ -111,5 +103,3 @@ const Signup = () => {
     </View>
   )
 }
-
-export default Signup

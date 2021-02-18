@@ -6,7 +6,7 @@ module.exports = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'stretch',
-    backgroundColor: '#121212'
+    backgroundColor: '#222222'
   },
   titleHeader: {
     alignSelf: 'center',
@@ -24,5 +24,8 @@ module.exports = StyleSheet.create({
     borderBottomColor: '#fff',
     borderBottomWidth: 1,
     marginBottom: 10
+  },
+  headerButton: {
+    padding: 10
   }
 })
