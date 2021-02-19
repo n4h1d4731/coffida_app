@@ -35,5 +35,14 @@ module.exports = StyleSheet.create({
   secondaryButtonText: {
     textAlign: 'center',
     color: 'white'
+  },
+  textBoxTitle: {
+    paddingTop: 10,
+    color: '#fff'
+  },
+  textBoxInput: {
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1,
+    color: '#fff'
   }
 })

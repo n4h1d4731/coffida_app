@@ -5,8 +5,12 @@ import { useAuthUpdate } from '../contexts/AuthProvider'
 
 import GlobalStyles from '../GlobalStyles'
 
-export default function HeaderRightOptions () {
+export default function HeaderRightOptions ({ navigation }) {
   const authUpdate = useAuthUpdate()
+
+  const onSelect = () => {
+    navigation.navigate('EditAccount')
+  }
 
   const onLogout = () => {
     authUpdate.signOut()
@@ -16,7 +20,7 @@ export default function HeaderRightOptions () {
     <Menu>
       <MenuTrigger text='Options' customStyles={{ triggerText: { color: '#fff' } }} style={GlobalStyles.headerButton} />
       <MenuOptions>
-        <MenuOption text='Edit Account' />
+        <MenuOption text='Edit Account' onSelect={onSelect} />
         <MenuOption text='Logout' onSelect={onLogout} />
       </MenuOptions>
     </Menu>

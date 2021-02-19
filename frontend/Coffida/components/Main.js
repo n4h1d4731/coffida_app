@@ -6,9 +6,13 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 // import required components
 import SplashScreen from './SplashScreen'
+
 import SignIn from './SignIn'
 import SignUp from './SignUp'
+
 import Locations from './Locations'
+import EditAccount from './EditAccount'
+import ChangePassword from './ChangePassword'
 
 // import required custom context hooks
 import { useAuthState, useAuthUpdate } from '../contexts/AuthProvider'
@@ -47,7 +51,7 @@ export default function Main () {
                   <Stack.Screen name='SplashScreen' component={SplashScreen} options={customStackOptions('')} />
                   )
                 : (
-                    authState.userToken === null
+                    (authState.userToken === null || authState.userId === null)
                       ? (
                         <>
                           <Stack.Screen name='SignIn' component={SignIn} options={customStackOptions('Sign In')} />
@@ -55,7 +59,11 @@ export default function Main () {
                         </>
                         )
                       : (
-                        <Stack.Screen name='Locations' component={Locations} options={customStackOptions('Locations')} />
+                        <>
+                          <Stack.Screen name='Locations' component={Locations} options={customStackOptions('Locations')} />
+                          <Stack.Screen name='EditAccount' component={EditAccount} options={customStackOptions('Edit Account')} />
+                          <Stack.Screen name='ChangePassword' component={ChangePassword} options={customStackOptions('Change Password')} />
+                        </>
                         )
                   )
             }
