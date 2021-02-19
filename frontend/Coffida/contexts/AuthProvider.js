@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert } from 'react-native'
+import { ToastAndroid } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -22,16 +22,16 @@ export default function AuthProvider ({ children }) {
       case 'RESTORE_TOKEN': {
         return {
           ...prevState,
-          userToken: action.token,
-          userId: action.id,
+          userToken: action.userToken,
+          userId: action.userId,
           isRestoringToken: false
         }
       }
       case 'SIGN_IN': {
         return {
           ...prevState,
-          userToken: action.token,
-          userId: action.id
+          userToken: action.userToken,
+          userId: action.userId
         }
       }
       case 'SIGN_OUT': {
@@ -48,75 +48,81 @@ export default function AuthProvider ({ children }) {
     isRestoringToken: true
   })
 
-  const authUpdate = React.useMemo(
-    () => ({
-      restoreToken: async () => {
-        let userToken = null
-        let userId = null
+  const authUpdate = React.useMemo(() => ({
+    restoreToken: async () => {
+      let userToken = null
+      let userId = null
 
-        try {
-          userToken = await AsyncStorage.getItem('@userToken')
+      try {
+        userToken = await AsyncStorage.getItem('@userToken')
 
-          userId = await AsyncStorage.getItem('@userId')
-          if (userId !== null) userId = parseInt(userId)
+        userId = await AsyncStorage.getItem('@userId')
+        if (userId !== null) userId = parseInt(userId)
 
-          dispatch({ type: 'RESTORE_TOKEN', token: userToken, id: userId })
-        } catch (e) {
-          Alert.alert('Failed retrieve sign in details. Please sign in again.')
-        }
-      },
-      signIn: async data => {
-        try {
-          const res = await fetch(API_ENDPOINT + '/user/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: data.email, password: data.password })
-          }).then(res => res.json())
+        dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userId: userId })
+      } catch (e) {
+        console.log('Failed to restore token')
+        console.log(e)
 
-          await AsyncStorage.setItem('@userToken', res.token)
-          await AsyncStorage.setItem('@userId', res.id.toString())
-
-          dispatch({ type: 'SIGN_IN', userToken: res.token, userId: res.id })
-        } catch (e) {
-          console.log('Failed to post login...')
-          console.log(e)
-
-          Alert.alert('Failed to sign. Please try again.')
-        }
-      },
-      signOut: async () => {
-        try {
-          await AsyncStorage.removeItem('@userToken')
-          await AsyncStorage.removeItem('@userId')
-
-          dispatch({ type: 'SIGN_OUT' })
-        } catch (e) {
-          console.log('Failed to remove sign in details from local storage...')
-          console.log(e)
-
-          Alert.alert('Failed to sign out. Please try again.')
-        }
-      },
-      signUp: async data => {
-        try {
-          await fetch(API_ENDPOINT + '/user', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ first_name: data.firstName, last_name: data.lastName, email: data.email, password: data.password })
-          })
-        } catch (e) {
-          console.log('Failed to post user...')
-          console.log(e)
-
-          Alert.alert('Failed to sign up. Please try again')
-        }
+        ToastAndroid.show('Failed retrieve sign in details. Please sign in again.', ToastAndroid.SHORT)
       }
-    }),
-    []
+    },
+    signIn: async data => {
+      try {
+        const res = await fetch(API_ENDPOINT + '/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: data.email, password: data.password })
+        }).then(res => {
+          if (res.status !== 200) throw new Error('Server didn\'t respond 200 OK')
+
+          return res.json()
+        })
+
+        await AsyncStorage.setItem('@userToken', res.token)
+        await AsyncStorage.setItem('@userId', res.id.toString())
+
+        dispatch({ type: 'SIGN_IN', userToken: res.token, userId: res.id })
+      } catch (e) {
+        console.log('Failed to post login...')
+        console.log(e)
+
+        ToastAndroid.show('Failed to sign. Please try again.', ToastAndroid.SHORT)
+      }
+    },
+    signOut: async () => {
+      try {
+        await AsyncStorage.removeItem('@userToken')
+        await AsyncStorage.removeItem('@userId')
+
+        dispatch({ type: 'SIGN_OUT' })
+      } catch (e) {
+        console.log('Failed to remove sign in details from local storage...')
+        console.log(e)
+
+        ToastAndroid.show('Failed to sign out. Please try again.', ToastAndroid.SHORT)
+      }
+    },
+    signUp: async data => {
+      await fetch(API_ENDPOINT + '/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ first_name: data.firstName, last_name: data.lastName, email: data.email, password: data.password })
+      }).then(res => {
+        if (res.status !== 200) throw new Error('Server didn\'t respond 200 OK')
+      }).catch(e => {
+        console.log('Failed to post user...')
+        console.log(e)
+
+        ToastAndroid.show('Failed to sign up. Please try again', ToastAndroid.SHORT)
+      })
+    }
+  }),
+  []
   )
 
   return (

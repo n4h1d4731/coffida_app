@@ -15,7 +15,7 @@ export default function Locations ({ navigation }) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderRightOptions />
+        <HeaderRightOptions navigation={navigation} />
       )
     })
   })
