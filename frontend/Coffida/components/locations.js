@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ActivityIndicator } from 'react-native'
 
-import HeaderRightOptions from './header-right-options'
+import HeaderRightOptions from './HeaderRightOptions'
 
 import GlobalStyles from '../GlobalStyles'
 

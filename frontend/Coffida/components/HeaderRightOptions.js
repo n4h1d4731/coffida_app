@@ -1,15 +1,15 @@
 import React from 'react'
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu'
 
-import { AuthContext } from '../App'
+import { useAuthUpdate } from '../contexts/AuthProvider'
 
 import GlobalStyles from '../GlobalStyles'
 
 export default function HeaderRightOptions () {
-  const { signOut } = React.useContext(AuthContext)
+  const authUpdate = useAuthUpdate()
 
   const onLogout = () => {
-    signOut()
+    authUpdate.signOut()
   }
 
   return (

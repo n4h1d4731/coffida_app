@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, Image } from 'react-native'
 
-import SignInForm from './sign-in-form'
+import SignInForm from './SignInForm'
 
 import GlobalStyles from '../GlobalStyles'
 

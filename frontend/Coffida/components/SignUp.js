@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, ToastAndroid, View } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 
-import { AuthContext } from '../App'
+import { useAuthUpdate } from '../contexts/AuthProvider'
 
 import GlobalStyles from '../GlobalStyles'
 
@@ -13,7 +13,7 @@ export default function Signup ({ navigation }) {
   const [password, setPassword] = React.useState('')
   const [confirmPassword, setConfirmPassword] = React.useState('')
 
-  const { signUp } = React.useContext(AuthContext)
+  const authUpdate = useAuthUpdate()
 
   const onCreateAccount = () => {
     if (firstName === '') {
@@ -42,7 +42,7 @@ export default function Signup ({ navigation }) {
       return
     }
 
-    signUp({ firstName: firstName, lastName: lastName, email: email, password: password })
+    authUpdate.signUp({ firstName: firstName, lastName: lastName, email: email, password: password })
       .then(() => {
         ToastAndroid.show('Account Created!', ToastAndroid.LONG)
         if (navigation.canGoBack()) {
