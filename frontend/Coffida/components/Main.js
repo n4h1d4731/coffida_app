@@ -33,7 +33,6 @@ export default function Main () {
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       authUpdate.restoreToken()
-      console.log('RAN!')
     }
 
     bootstrapAsync()
