@@ -1,3 +1,5 @@
+import { fetch } from 'node-fetch'
+
 import React from 'react'
 import { ToastAndroid } from 'react-native'
 
