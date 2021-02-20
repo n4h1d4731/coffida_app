@@ -1,8 +1,8 @@
 import React from 'react'
 import { Button, TextInput, ToastAndroid, View } from 'react-native'
 
-import { useAuthState } from '../contexts/AuthProvider'
-import { useUserUpdate } from '../contexts/UserProvider'
+import { useAuth } from '../contexts/AuthProvider'
+import { useUser } from '../contexts/UserProvider'
 
 import GlobalStyles from '../styles/GlobalStyles'
 
@@ -10,11 +10,11 @@ export default function ChangePassword ({ navigation }) {
   const [newPassword, setNewPassword] = React.useState('')
   const [newConfirmPassword, setNewConfirmPassword] = React.useState('')
 
-  const authState = useAuthState()
-  const userUpdate = useUserUpdate()
+  const { authState } = useAuth()
+  const { userFunctions } = useUser()
 
   const changePassword = () => {
-    userUpdate.updatePassword({ password: newPassword, userToken: authState.userToken, userId: authState.userId })
+    userFunctions.updatePassword({ password: newPassword, userToken: authState.userToken, userId: authState.userId })
       .then(res => {
         if (res.success === false) {
           ToastAndroid.show(res.message, ToastAndroid.SHORT)

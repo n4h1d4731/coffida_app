@@ -2,15 +2,15 @@ import React from 'react'
 import { Button, Pressable, Text, TextInput, ToastAndroid, View } from 'react-native'
 
 // import required custom context hooks
-import { useAuthState } from '../contexts/AuthProvider'
-import { useUserUpdate } from '../contexts/UserProvider'
+import { useAuth } from '../contexts/AuthProvider'
+import { useUser } from '../contexts/UserProvider'
 
 import GlobalStyles from '../styles/GlobalStyles'
 
 export default function EditAccount ({ navigation }) {
-  const authState = useAuthState()
+  const { authState } = useAuth()
 
-  const userUpdate = useUserUpdate()
+  const { userFunctions } = useUser()
 
   const [isLoading, setIsLoading] = React.useState(true)
 
@@ -19,7 +19,7 @@ export default function EditAccount ({ navigation }) {
   const [newEmail, setNewEmail] = React.useState('')
 
   const onSave = () => {
-    userUpdate.saveDetails({
+    userFunctions.saveDetails({
       newFirstName: newFirstName,
       newLastName: newLastName,
       newEmail: newEmail,
@@ -46,7 +46,7 @@ export default function EditAccount ({ navigation }) {
   }
 
   React.useEffect(() => {
-    userUpdate.fetchDetails({ userToken: authState.userToken, userId: authState.userId })
+    userFunctions.fetchDetails({ userToken: authState.userToken, userId: authState.userId })
       .then((res) => {
         if (res.success === false) {
           ToastAndroid.show(res.message, ToastAndroid.SHORT)

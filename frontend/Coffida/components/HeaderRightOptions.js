@@ -2,19 +2,19 @@ import React from 'react'
 import { ToastAndroid } from 'react-native'
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu'
 
-import { useAuthUpdate } from '../contexts/AuthProvider'
+import { useAuth } from '../contexts/AuthProvider'
 
 import GlobalStyles from '../styles/GlobalStyles'
 
 export default function HeaderRightOptions ({ navigation }) {
-  const authUpdate = useAuthUpdate()
+  const authFunctions = useAuth()
 
   const onSelect = () => {
     navigation.navigate('EditAccount')
   }
 
   const onLogout = () => {
-    authUpdate.signOut()
+    authFunctions.signOut()
       .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
   }
 

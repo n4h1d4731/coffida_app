@@ -4,15 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
 
-const AuthStateContext = React.createContext()
-const AuthUpdateContext = React.createContext()
+const AuthContext = React.createContext()
 
-export function useAuthState () {
-  return React.useContext(AuthStateContext)
-}
-
-export function useAuthUpdate () {
-  return React.useContext(AuthUpdateContext)
+export function useAuth () {
+  return React.useContext(AuthContext)
 }
 
 export default function AuthProvider ({ children }) {
@@ -47,7 +42,7 @@ export default function AuthProvider ({ children }) {
     isRestoringToken: true
   })
 
-  const authUpdate = React.useMemo(() => ({
+  const authFunctions = React.useMemo(() => ({
     restoreToken: async () => {
       let userToken = null
       let userId = null
@@ -132,11 +127,14 @@ export default function AuthProvider ({ children }) {
     }
   }), [])
 
+  const value = {
+    authState,
+    authFunctions
+  }
+
   return (
-    <AuthStateContext.Provider value={authState}>
-      <AuthUpdateContext.Provider value={authUpdate}>
-        {children}
-      </AuthUpdateContext.Provider>
-    </AuthStateContext.Provider>
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
   )
 }

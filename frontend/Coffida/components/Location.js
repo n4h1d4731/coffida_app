@@ -2,7 +2,6 @@ import React from 'react'
 import { Dimensions, Image, Pressable, Text, View } from 'react-native'
 
 import { Rating } from 'react-native-ratings'
-import { totalSize } from 'react-native-dimension'
 
 import locationStyles from '../styles/LocationStyles'
 
@@ -34,13 +33,14 @@ export default function Location (props) {
             <Text style={locationStyles.text}>Rating: </Text>
             <Rating
               type='custom'
-              ratingColor='#fff'
+              ratingColor='yellow'
               ratingBackgroundColor='#111'
               tintColor='#333'
-              imageSize={totalSize(2.5)}
+              imageSize={screen.width / 20}
               ratingCount={5}
               startingValue={props.location.overallRating}
               readonly
+              style={{ alignSelf: 'center' }}
             />
           </View>
         </View>

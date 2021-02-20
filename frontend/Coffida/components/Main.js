@@ -16,7 +16,7 @@ import EditAccount from './EditAccount'
 import ChangePassword from './ChangePassword'
 
 // import required custom context hooks
-import { useAuthState, useAuthUpdate } from '../contexts/AuthProvider'
+import { useAuth } from '../contexts/AuthProvider'
 
 const Stack = createStackNavigator()
 const customStackOptions = (title) => ({
@@ -32,12 +32,11 @@ const customStackOptions = (title) => ({
 })
 
 export default function Main () {
-  const authState = useAuthState()
-  const authUpdate = useAuthUpdate()
+  const { authState, authFunctions } = useAuth()
 
   React.useEffect(() => {
     const bootstrapAsync = async () => {
-      authUpdate.restoreToken()
+      authFunctions.restoreToken()
         .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
     }
 

@@ -1,23 +1,18 @@
 import React from 'react'
 import { ToastAndroid } from 'react-native'
 
-import { useAuthUpdate } from './AuthProvider'
+import { useAuth } from './AuthProvider'
 
 const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
 
-const UserStateContext = React.createContext()
-const UserUpdateContext = React.createContext()
+const UserContext = React.createContext()
 
-export function useUserState () {
-  return React.useContext(UserStateContext)
-}
-
-export function useUserUpdate () {
-  return React.useContext(UserUpdateContext)
+export function useUser () {
+  return React.useContext(UserContext)
 }
 
 export default function UserProvider ({ children }) {
-  const authUpdate = useAuthUpdate()
+  const authFunctions = useAuth()
 
   const [userState, dispatch] = React.useReducer((prevState, action) => {
     switch (action.type) {
@@ -36,7 +31,7 @@ export default function UserProvider ({ children }) {
     email: ''
   })
 
-  const userUpdate = React.useMemo(() => ({
+  const userFunctions = React.useMemo(() => ({
     fetchDetails: async data => {
       return fetch(API_ENDPOINT + `/user/${data.userId}`, {
         method: 'GET',
@@ -45,7 +40,7 @@ export default function UserProvider ({ children }) {
         }
       }).then(async res => {
         if (res.status === 401) {
-          authUpdate.signOut()
+          authFunctions.signOut()
             .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
 
           return { success: false, message: 'Login no longer valid' }
@@ -76,7 +71,7 @@ export default function UserProvider ({ children }) {
         body: JSON.stringify({ first_name: data.newFirstName, last_name: data.newLastName, email: data.newEmail })
       }).then(res => {
         if (res.status === 401) {
-          authUpdate.signOut()
+          authFunctions.signOut()
             .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
 
           return { success: false, message: 'Login no longer valid' }
@@ -104,7 +99,7 @@ export default function UserProvider ({ children }) {
         body: JSON.stringify({ password: data.password })
       }).then(res => {
         if (res.status === 401) {
-          authUpdate.signOut()
+          authFunctions.signOut()
             .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
 
           return { success: false, message: 'Login no longer valid' }
@@ -121,11 +116,14 @@ export default function UserProvider ({ children }) {
   []
   )
 
+  const value = {
+    userState,
+    userFunctions
+  }
+
   return (
-    <UserStateContext.Provider value={userState}>
-      <UserUpdateContext.Provider value={userUpdate}>
-        {children}
-      </UserUpdateContext.Provider>
-    </UserStateContext.Provider>
+    <UserContext.Provider value={value}>
+      {children}
+    </UserContext.Provider>
   )
 }

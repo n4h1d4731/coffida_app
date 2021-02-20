@@ -2,7 +2,7 @@ import React from 'react'
 import { View, ActivityIndicator, FlatList, ToastAndroid } from 'react-native'
 
 // import required contexts
-import { useAuthState, useAuthUpdate } from '../contexts/AuthProvider'
+import { useAuth } from '../contexts/AuthProvider'
 
 // import required components
 import HeaderRightOptions from './HeaderRightOptions'
@@ -18,8 +18,7 @@ export default function Locations ({ navigation }) {
   const [locationsData, setLocationsData] = React.useState([])
   const [locationFilters, setLocationFilters] = React.useState({})
 
-  const authState = useAuthState()
-  const authUpdate = useAuthUpdate()
+  const { authState, authFunctions } = useAuth()
 
   const getLocations = async (userToken, filters) => {
     const url = new URL(API_ENDPOINT + '/find')
@@ -32,7 +31,7 @@ export default function Locations ({ navigation }) {
       }
     }).then(async res => {
       if (res.status === 401) {
-        authUpdate.signOut()
+        authFunctions.signOut()
           .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
 
         return { success: false, message: 'Login no longer valid' }

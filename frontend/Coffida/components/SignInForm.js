@@ -3,7 +3,7 @@ import { Button, Pressable, Text, TextInput, ToastAndroid } from 'react-native'
 
 import { useNavigation } from '@react-navigation/native'
 
-import { useAuthUpdate } from '../contexts/AuthProvider'
+import { useAuth } from '../contexts/AuthProvider'
 
 import GlobalStyles from '../styles/GlobalStyles'
 
@@ -12,7 +12,7 @@ export default function SignInForm () {
   const [password, setPassword] = React.useState('')
 
   const navigation = useNavigation()
-  const authUpdate = useAuthUpdate()
+  const { authFunctions } = useAuth()
 
   const onSignIn = () => {
     if (email === '') {
@@ -29,7 +29,7 @@ export default function SignInForm () {
       return
     }
 
-    authUpdate.signIn({ email, password })
+    authFunctions.signIn({ email, password })
       .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
   }
 
