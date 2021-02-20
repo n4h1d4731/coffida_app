@@ -62,13 +62,20 @@ export default function UserProvider ({ children }) {
       })
     },
     saveDetails: async data => {
+      const requestData = {
+        first_name: data.newFirstName,
+        last_name: data.newLastName,
+        email: data.newEmail
+      }
+      if (data.password != null) requestData.password = data.password
+
       return fetch(API_ENDPOINT + `/user/${data.userId}`, {
         method: 'PATCH',
         headers: {
           'X-Authorization': data.userToken,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ first_name: data.newFirstName, last_name: data.newLastName, email: data.newEmail })
+        body: JSON.stringify(requestData)
       }).then(res => {
         if (res.status === 401) {
           authFunctions.signOut()

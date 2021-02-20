@@ -1,11 +1,10 @@
 import React from 'react'
-import { View, ActivityIndicator, FlatList, ToastAndroid } from 'react-native'
+import { View, ActivityIndicator, FlatList, ToastAndroid, Button } from 'react-native'
 
 // import required contexts
 import { useAuth } from '../contexts/AuthProvider'
 
 // import required components
-import HeaderRightOptions from './HeaderRightOptions'
 import Location from './Location'
 
 import GlobalStyles from '../styles/GlobalStyles'
@@ -56,39 +55,42 @@ export default function Locations ({ navigation }) {
           return
         }
 
-        setLocationsData(res.data)
+        setLocationsData(res.data.map(location => ({
+          id: location.location_id,
+          name: location.location_name,
+          town: location.location_town,
+          photoPath: location.photo_path,
+          overallRating: location.avg_overall_rating
+        })))
         setIsLoading(false)
       })
   }, [])
-
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <HeaderRightOptions navigation={navigation} />
-      )
-    })
-  })
 
   return (
     <View style={GlobalStyles.contentWrapper}>
       {
         isLoading
           ? (<ActivityIndicator size='large' color='#fff' />)
-          : (<FlatList
-              keyExtractor={(item) => item.location_id.toString()}
-              data={locationsData}
-              renderItem={({ item }) => (
-                <Location
-                  location={{
-                    id: item.location_id,
-                    name: item.location_name,
-                    town: item.location_town,
-                    photoPath: item.photo_path,
-                    overallRating: item.avg_overall_rating
-                  }}
-                />
-              )}
-             />)
+          : (
+            <>
+              <FlatList
+                keyExtractor={(item) => item.id.toString()}
+                data={locationsData}
+                renderItem={({ item }) => (
+                  <Location
+                    location={{
+                      id: item.id,
+                      name: item.name,
+                      town: item.town,
+                      photoPath: item.photoPath,
+                      overallRating: item.overallRating
+                    }}
+                  />
+                )}
+              />
+              <Button style={GlobalStyles.bottomRightButton} title='Filter' />
+            </>
+            )
       }
     </View>
   )
