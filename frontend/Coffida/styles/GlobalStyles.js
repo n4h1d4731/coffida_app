@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native'
+import { totalSize } from 'react-native-dimension'
 
 module.exports = StyleSheet.create({
   contentWrapper: {
@@ -11,13 +12,13 @@ module.exports = StyleSheet.create({
   titleHeader: {
     alignSelf: 'center',
     color: '#fff',
-    fontSize: 40,
+    fontSize: totalSize(5),
     fontWeight: 'bold'
   },
   titleImage: {
     alignSelf: 'center',
-    width: 250,
-    height: 250
+    width: totalSize(25),
+    height: totalSize(25)
   },
   textInput: {
     color: '#fff',

@@ -5,7 +5,7 @@ import { Button, Pressable, Text, TextInput, ToastAndroid, View } from 'react-na
 import { useAuthState } from '../contexts/AuthProvider'
 import { useUserUpdate } from '../contexts/UserProvider'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function EditAccount ({ navigation }) {
   const authState = useAuthState()
@@ -26,7 +26,12 @@ export default function EditAccount ({ navigation }) {
       userToken: authState.userToken,
       userId: authState.userId
     })
-      .then(() => {
+      .then(res => {
+        if (res.success === false) {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT)
+          return
+        }
+
         ToastAndroid.show('Details Updated!', ToastAndroid.SHORT)
         if (navigation.canGoBack()) {
           navigation.pop()
@@ -43,9 +48,14 @@ export default function EditAccount ({ navigation }) {
   React.useEffect(() => {
     userUpdate.fetchDetails({ userToken: authState.userToken, userId: authState.userId })
       .then((res) => {
-        setNewFirstName(res.firstName)
-        setNewLastName(res.lastName)
-        setNewEmail(res.email)
+        if (res.success === false) {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT)
+          return
+        }
+
+        setNewFirstName(res.data.first_name)
+        setNewLastName(res.data.last_name)
+        setNewEmail(res.data.email)
 
         setIsLoading(false)
       })

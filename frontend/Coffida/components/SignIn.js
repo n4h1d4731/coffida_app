@@ -3,7 +3,7 @@ import { View, Text, Image } from 'react-native'
 
 import SignInForm from './SignInForm'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function SignIn ({ navigation }) {
   return (

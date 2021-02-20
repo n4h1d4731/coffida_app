@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-gesture-handler'
 
 import { useAuthUpdate } from '../contexts/AuthProvider'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function Signup ({ navigation }) {
   const [firstName, setFirstName] = React.useState('')
@@ -43,8 +43,13 @@ export default function Signup ({ navigation }) {
     }
 
     authUpdate.signUp({ firstName: firstName, lastName: lastName, email: email, password: password })
-      .then(() => {
-        ToastAndroid.show('Account Created!', ToastAndroid.LONG)
+      .then(res => {
+        if (res.success === false) {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT)
+          return
+        }
+
+        ToastAndroid.show('Account Created!', ToastAndroid.SHORT)
         if (navigation.canGoBack()) {
           navigation.pop()
         } else {

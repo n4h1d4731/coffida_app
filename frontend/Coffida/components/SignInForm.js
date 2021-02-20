@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 
 import { useAuthUpdate } from '../contexts/AuthProvider'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function SignInForm () {
   const [email, setEmail] = React.useState('')
@@ -30,6 +30,7 @@ export default function SignInForm () {
     }
 
     authUpdate.signIn({ email, password })
+      .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
   }
 
   const onCreateAccount = () => {

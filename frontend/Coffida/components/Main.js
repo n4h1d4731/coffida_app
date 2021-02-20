@@ -1,4 +1,5 @@
 import React from 'react'
+import { ToastAndroid } from 'react-native'
 
 // import required stack navigation components
 import { NavigationContainer } from '@react-navigation/native'
@@ -37,6 +38,7 @@ export default function Main () {
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       authUpdate.restoreToken()
+        .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
     }
 
     bootstrapAsync()

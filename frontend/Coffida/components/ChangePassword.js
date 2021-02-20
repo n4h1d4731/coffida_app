@@ -4,7 +4,7 @@ import { Button, TextInput, ToastAndroid, View } from 'react-native'
 import { useAuthState } from '../contexts/AuthProvider'
 import { useUserUpdate } from '../contexts/UserProvider'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function ChangePassword ({ navigation }) {
   const [newPassword, setNewPassword] = React.useState('')
@@ -15,7 +15,12 @@ export default function ChangePassword ({ navigation }) {
 
   const changePassword = () => {
     userUpdate.updatePassword({ password: newPassword, userToken: authState.userToken, userId: authState.userId })
-      .then(() => {
+      .then(res => {
+        if (res.success === false) {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT)
+          return
+        }
+
         ToastAndroid.show('Password changed successfully!', ToastAndroid.SHORT)
         if (navigation.canGoBack()) {
           navigation.popToTop()
