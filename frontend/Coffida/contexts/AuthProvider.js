@@ -1,7 +1,4 @@
-import { fetch } from 'node-fetch'
-
 import React from 'react'
-import { ToastAndroid } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -57,41 +54,48 @@ export default function AuthProvider ({ children }) {
 
       try {
         userToken = await AsyncStorage.getItem('@userToken')
-
         userId = await AsyncStorage.getItem('@userId')
+
         if (userId !== null) userId = parseInt(userId)
 
         dispatch({ type: 'RESTORE_TOKEN', userToken: userToken, userId: userId })
+        return { success: true }
       } catch (e) {
         console.log('Failed to restore token')
         console.log(e)
 
-        ToastAndroid.show('Failed retrieve sign in details. Please sign in again.', ToastAndroid.SHORT)
+        return { success: false, message: 'Failed retrieve sign in details' }
       }
     },
     signIn: async data => {
       try {
-        const res = await fetch(API_ENDPOINT + '/user/login', {
+        return fetch(API_ENDPOINT + '/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ email: data.email, password: data.password })
-        }).then(res => {
-          if (res.status !== 200) throw new Error('Server didn\'t respond 200 OK')
+        }).then(async res => {
+          if (res.status === 400) return { success: false, message: 'Invalid email/password' }
+          else if (res.status === 500) return { success: false, message: 'Server Error' }
+          else {
+            const jsonData = await res.json()
+            return { success: true, data: jsonData }
+          }
+        }).then(async res => {
+          if (res.success === false) return res
 
-          return res.json()
+          await AsyncStorage.setItem('@userToken', res.data.token)
+          await AsyncStorage.setItem('@userId', res.data.id.toString())
+
+          dispatch({ type: 'SIGN_IN', userToken: res.data.token, userId: res.data.id })
+          return { success: true }
         })
-
-        await AsyncStorage.setItem('@userToken', res.token)
-        await AsyncStorage.setItem('@userId', res.id.toString())
-
-        dispatch({ type: 'SIGN_IN', userToken: res.token, userId: res.id })
       } catch (e) {
         console.log('Failed to post login...')
         console.log(e)
 
-        ToastAndroid.show('Failed to sign. Please try again.', ToastAndroid.SHORT)
+        return { success: false, message: 'Failed to sign' }
       }
     },
     signOut: async () => {
@@ -100,32 +104,33 @@ export default function AuthProvider ({ children }) {
         await AsyncStorage.removeItem('@userId')
 
         dispatch({ type: 'SIGN_OUT' })
+        return { success: true }
       } catch (e) {
         console.log('Failed to remove sign in details from local storage...')
         console.log(e)
 
-        ToastAndroid.show('Failed to sign out. Please try again.', ToastAndroid.SHORT)
+        return { success: false, message: 'Failed to sign out' }
       }
     },
     signUp: async data => {
-      await fetch(API_ENDPOINT + '/user', {
+      return fetch(API_ENDPOINT + '/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ first_name: data.firstName, last_name: data.lastName, email: data.email, password: data.password })
       }).then(res => {
-        if (res.status !== 200) throw new Error('Server didn\'t respond 200 OK')
+        if (res.status === 400) return { success: false, message: 'Invalid email/password' }
+        else if (res.status === 500) return { success: false, message: 'Server Error' }
+        else return { success: true }
       }).catch(e => {
-        console.log('Failed to post user...')
+        console.log('Failed to signup...')
         console.log(e)
 
-        ToastAndroid.show('Failed to sign up. Please try again', ToastAndroid.SHORT)
+        return { success: false, message: 'Failed to sign up' }
       })
     }
-  }),
-  []
-  )
+  }), [])
 
   return (
     <AuthStateContext.Provider value={authState}>

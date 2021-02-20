@@ -1,7 +1,7 @@
-import { fetch } from 'node-fetch'
-
 import React from 'react'
 import { ToastAndroid } from 'react-native'
+
+import { useAuthUpdate } from './AuthProvider'
 
 const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
 
@@ -17,6 +17,8 @@ export function useUserUpdate () {
 }
 
 export default function UserProvider ({ children }) {
+  const authUpdate = useAuthUpdate()
+
   const [userState, dispatch] = React.useReducer((prevState, action) => {
     switch (action.type) {
       case 'UPDATE_DETAILS': {
@@ -36,65 +38,84 @@ export default function UserProvider ({ children }) {
 
   const userUpdate = React.useMemo(() => ({
     fetchDetails: async data => {
-      try {
-        const res = await fetch(API_ENDPOINT + `/user/${data.userId}`, {
-          method: 'GET',
-          headers: {
-            'X-Authorization': data.userToken
-          }
-        }).then(res => {
-          if (res.status !== 200) throw new Error('Server didn\'t respond 200 OK')
+      return fetch(API_ENDPOINT + `/user/${data.userId}`, {
+        method: 'GET',
+        headers: {
+          'X-Authorization': data.userToken
+        }
+      }).then(async res => {
+        if (res.status === 401) {
+          authUpdate.signOut()
+            .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
 
-          return res.json()
-        })
-        dispatch({ type: 'UPDATE_DETAILS', firstName: res.first_name, lastName: res.last_name, email: res.email })
+          return { success: false, message: 'Login no longer valid' }
+        } else if (res.status === 500) return { success: false, message: 'Server Error' }
+        else {
+          const jsonData = await res.json()
+          return { success: true, data: jsonData }
+        }
+      }).then(res => {
+        if (res.status === false) return res
 
-        return { firstName: res.first_name, lastName: res.last_name, email: res.email }
-      } catch (e) {
+        dispatch({ type: 'UPDATE_DETAILS', firstName: res.data.first_name, lastName: res.data.last_name, email: res.data.email })
+        return res
+      }).catch(e => {
         console.log('Failed to load user details...')
         console.log(e)
 
-        ToastAndroid.show('Failed to load your details. Please try again.', ToastAndroid.SHORT)
-      }
+        return { success: false, message: 'Failed to load your details' }
+      })
     },
     saveDetails: async data => {
-      try {
-        await fetch(API_ENDPOINT + `/user/${data.userId}`, {
-          method: 'PATCH',
-          headers: {
-            'X-Authorization': data.userToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ first_name: data.newFirstName, last_name: data.newLastName, email: data.newEmail })
-        }).then(res => {
-          if (res.ok === false) throw new Error('Server didn\'t respond 200 OK')
-        })
+      return fetch(API_ENDPOINT + `/user/${data.userId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': data.userToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ first_name: data.newFirstName, last_name: data.newLastName, email: data.newEmail })
+      }).then(res => {
+        if (res.status === 401) {
+          authUpdate.signOut()
+            .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
+
+          return { success: false, message: 'Login no longer valid' }
+        } else if (res.status === 500) return { success: false, message: 'Server Error' }
+        else return { success: true }
+      }).then(res => {
+        if (res.success === false) return res
+
         dispatch({ type: 'UPDATE_DETAILS', firstName: data.newFirstName, lastName: data.newLastName, email: data.newEmail })
-      } catch (e) {
+        return res
+      }).catch(e => {
         console.log('Failed to update user details...')
         console.log(e)
 
-        ToastAndroid.show('Failed to update your details. Please try again.', ToastAndroid.SHORT)
-      }
+        return { success: false, message: 'Failed to update your details' }
+      })
     },
     updatePassword: async data => {
-      try {
-        await fetch(API_ENDPOINT + `/user/${data.userId}`, {
-          method: 'PATCH',
-          headers: {
-            'X-Authorization': data.userToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ password: data.password })
-        }).then(res => {
-          if (res.ok === false) throw new Error('Server didn\'t respond 200 OK')
-        })
-      } catch (e) {
+      return fetch(API_ENDPOINT + `/user/${data.userId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': data.userToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: data.password })
+      }).then(res => {
+        if (res.status === 401) {
+          authUpdate.signOut()
+            .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
+
+          return { success: false, message: 'Login no longer valid' }
+        } else if (res.status === 500) return { success: false, message: 'Server Error' }
+        else return { success: true }
+      }).catch(e => {
         console.log('Failed to update password...')
         console.log(e)
 
-        ToastAndroid.show('Failed to update your password. Please try again.', ToastAndroid.SHORT)
-      }
+        return { success: false, message: 'Failed to update your password' }
+      })
     }
   }),
   []

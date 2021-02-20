@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image, Text, View } from 'react-native'
 
-import GlobalStyles from '../GlobalStyles'
+import GlobalStyles from '../styles/GlobalStyles'
 
 export default function SplashScreen () {
   return (
