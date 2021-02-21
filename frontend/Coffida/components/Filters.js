@@ -21,8 +21,7 @@ export default function Filters ({ navigation, route }) {
   }
 
   const onResetFilters = () => {
-      for (const locationProp in locationFilters) delete locationFilters[locationProp]
-      navigation.navigate('Locations', { locationFilters: locationFilters })
+      navigation.navigate('Locations', { locationFilters: {} })
   }
 
   const validateRating = (rating) => {
