@@ -8,6 +8,8 @@ target 'Coffida' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'RNCPicker', :path => '../node_modules/@react-native-picker/picker'
+
   target 'CoffidaTests' do
     inherit! :complete
     # Pods for testing

@@ -11,12 +11,15 @@ import GlobalStyles from '../styles/GlobalStyles'
 
 const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
 
-export default function Locations ({ navigation }) {
-  const [isLoading, setIsLoading] = React.useState(false)
+export default function Locations ({ navigation, route }) {
+  const isPaginationDisabled = true
+
+  const [isLoadingFullData, setIsLoadingFullData] = React.useState(false)
+  const [isLoadingNewData, setIsLoadingNewData] = React.useState(false)
 
   const [locationsData, setLocationsData] = React.useState([])
 
-  const [locationFilters] = React.useState({})
+  const [locationFilters, setLocationFilters] = React.useState({})
   const [locationFilterOffset, setLocationFilterOffset] = React.useState(0)
   const locationFilterLimit = 20
 
@@ -51,13 +54,13 @@ export default function Locations ({ navigation }) {
   }
 
   const onLastLocationReached = () => {
-    if (isLoading === true || true) return // do not actually run this function as the server returns duplicate records
+    if (isLoadingFullData === true || isLoadingNewData === true || isPaginationDisabled) return // do not actually run this function as the server returns duplicate records
 
-    setIsLoading(true)
+    setIsLoadingNewData(true)
     getLocations(authState.userToken, locationFilters, locationFilterLimit, locationFilterOffset + 1)
       .then(res => {
         if (res.data.count === 0) {
-          setIsLoading(false)
+          setIsLoadingNewData(false)
           return
         }
         const newLocationsData = res.data.map(location => ({
@@ -70,12 +73,16 @@ export default function Locations ({ navigation }) {
 
         setLocationFilterOffset(prev => prev + 1)
         setLocationsData(prevLocationsData => [...prevLocationsData, ...newLocationsData])
-        setIsLoading(false)
+        setIsLoadingNewData(false)
       })
   }
 
+  const onFiltersPress = () => {
+    navigation.navigate('Filters', { locationFilters: locationFilters })
+  }
+
   React.useEffect(() => {
-    setIsLoading(true)
+    setIsLoadingFullData(true)
     getLocations(authState.userToken, locationFilters, locationFilterLimit, locationFilterOffset)
       .then(res => {
         if (res.success === false) {
@@ -90,33 +97,44 @@ export default function Locations ({ navigation }) {
           photoPath: location.photo_path,
           overallRating: location.avg_overall_rating
         })))
-        setIsLoading(false)
+        setIsLoadingFullData(false)
       })
-  }, [])
+  }, [locationFilters])
+
+  React.useLayoutEffect(() => {
+    if (route.params?.locationFilters) {
+      setLocationFilters({ ...route.params?.locationFilters })
+    }
+  }, [route.params?.locationFilters])
 
   return (
-    <View style={GlobalStyles.contentWrapper}>
-      <>
-        <FlatList
-          onEndReached={onLastLocationReached}
-          keyExtractor={(item) => item.id.toString()}
-          data={locationsData}
-          renderItem={({ item }) => (
-            <Location
-              location={{
-                id: item.id,
-                name: item.name,
-                town: item.town,
-                photoPath: item.photoPath,
-                overallRating: item.overallRating
-              }}
+    <View style={[GlobalStyles.contentWrapper, { justifyContent: 'space-between' }]}>
+      {
+        isLoadingFullData === false
+          ? (
+            <FlatList
+              onEndReached={onLastLocationReached}
+              keyExtractor={(item) => item.id.toString()}
+              data={locationsData}
+              renderItem={({ item }) => (
+                <Location
+                  location={{
+                    id: item.id,
+                    name: item.name,
+                    town: item.town,
+                    photoPath: item.photoPath,
+                    overallRating: item.overallRating
+                  }}
+                />
+              )}
             />
-          )}
-        />
-      </>
+          ) : (
+            <ActivityIndicator size='large' color='#fff' style={{ marginTop: 10 }} />
+          )
+      }
       <View>
-        {isLoading ? (<ActivityIndicator size='small' color='#fff' />) : (<></>)}
-        <Button style={GlobalStyles.bottomRightButton} title='Filter' />
+        {isLoadingNewData ? (<ActivityIndicator size='small' color='#fff' style={{ marginBottom: 10 }} />) : (<></>)}
+        <Button color='#111' title='Filter' onPress={onFiltersPress} />
       </View>
     </View>
   )

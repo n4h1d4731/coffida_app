@@ -9,6 +9,7 @@ import SignIn from './SignIn'
 import SignUp from './SignUp'
 
 import Locations from './Locations'
+import Filters from './Filters'
 
 // import required custom context hooks
 import { useAuth } from '../contexts/AuthProvider'
@@ -37,7 +38,10 @@ export default function Home () {
     }
 
     return (
-      <Stack.Screen name='Locations' component={Locations} options={customStackOptions} />
+      <>
+        <Stack.Screen name='Locations' component={Locations} options={customStackOptions} />
+        <Stack.Screen name='Filters' component={Filters} options={customStackOptions} />
+      </>
     )
   }
 
