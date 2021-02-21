@@ -16,14 +16,14 @@ export default function Locations ({ navigation }) {
 
   const [locationsData, setLocationsData] = React.useState([])
 
-  const [locationFilters, setLocationFilters] = React.useState({})
+  const [locationFilters] = React.useState({})
   const [locationFilterOffset, setLocationFilterOffset] = React.useState(0)
   const locationFilterLimit = 20
 
   const { authState, authFunctions } = useAuth()
 
   const getLocations = async (userToken, filters, limit, offset) => {
-    let allFilters = ({ ...filters, ...{ limit: limit, offset: offset } })
+    const allFilters = ({ ...filters, ...{ limit: limit, offset: offset } })
     const url = API_ENDPOINT + '/find?' + (Object.keys(allFilters).map(key => key + '=' + allFilters[key]).join('&'))
 
     return fetch(url, {
@@ -52,23 +52,22 @@ export default function Locations ({ navigation }) {
 
   const onLastLocationReached = () => {
     if (isLoading === true || true) return // do not actually run this function as the server returns duplicate records
-    
+
     setIsLoading(true)
     getLocations(authState.userToken, locationFilters, locationFilterLimit, locationFilterOffset + 1)
       .then(res => {
         if (res.data.count === 0) {
-          setHasMoreLocations(false)
           setIsLoading(false)
           return
         }
-        let newLocationsData = res.data.map(location => ({
+        const newLocationsData = res.data.map(location => ({
           id: location.location_id,
           name: location.location_name,
           town: location.location_town,
           photoPath: location.photo_path,
           overallRating: location.avg_overall_rating
         }))
-        
+
         setLocationFilterOffset(prev => prev + 1)
         setLocationsData(prevLocationsData => [...prevLocationsData, ...newLocationsData])
         setIsLoading(false)
@@ -116,7 +115,7 @@ export default function Locations ({ navigation }) {
         />
       </>
       <View>
-        { isLoading ? (<ActivityIndicator size='small' color='#fff' />) : (<></>) }
+        {isLoading ? (<ActivityIndicator size='small' color='#fff' />) : (<></>)}
         <Button style={GlobalStyles.bottomRightButton} title='Filter' />
       </View>
     </View>
