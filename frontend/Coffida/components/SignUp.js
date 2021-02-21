@@ -13,7 +13,7 @@ export default function Signup ({ navigation }) {
   const [password, setPassword] = React.useState('')
   const [confirmPassword, setConfirmPassword] = React.useState('')
 
-  const authFunctions = useAuth()
+  const { authFunctions } = useAuth()
 
   const onCreateAccount = () => {
     if (firstName === '') {

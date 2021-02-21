@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Pressable, Text, TextInput, ToastAndroid, View } from 'react-native'
+import { Button, Text, TextInput, ToastAndroid, View } from 'react-native'
 
 // import required custom context hooks
 import { useAuth } from '../contexts/AuthProvider'
@@ -9,7 +9,6 @@ import GlobalStyles from '../styles/GlobalStyles'
 
 export default function EditAccount ({ navigation }) {
   const { authState } = useAuth()
-
   const { userFunctions } = useUser()
 
   const [isLoading, setIsLoading] = React.useState(true)
@@ -17,15 +16,20 @@ export default function EditAccount ({ navigation }) {
   const [newFirstName, setNewFirstName] = React.useState('')
   const [newLastName, setNewLastName] = React.useState('')
   const [newEmail, setNewEmail] = React.useState('')
+  const [newPassword, setNewPassword] = React.useState('')
+  const [newConfirmPassword, setNewConfirmPassword] = React.useState('')
 
   const onSave = () => {
-    userFunctions.saveDetails({
+    const requestData = {
       newFirstName: newFirstName,
       newLastName: newLastName,
       newEmail: newEmail,
       userToken: authState.userToken,
       userId: authState.userId
-    })
+    }
+    if (newPassword !== '') requestData.newPassword = newPassword
+
+    userFunctions.saveDetails(requestData)
       .then(res => {
         if (res.success === false) {
           ToastAndroid.show(res.message, ToastAndroid.SHORT)
@@ -39,10 +43,6 @@ export default function EditAccount ({ navigation }) {
           navigation.navigate('Locations')
         }
       })
-  }
-
-  const onChangePassword = () => {
-    navigation.navigate('ChangePassword')
   }
 
   React.useEffect(() => {
@@ -63,7 +63,7 @@ export default function EditAccount ({ navigation }) {
 
   return (
     <View style={GlobalStyles.contentWrapper}>
-      <View style={{ flex: 0.7 }}>
+      <View style={{ marginTop: 10 }}>
         <View style={GlobalStyles.flexRow}>
           <Text style={GlobalStyles.textBoxTitle}>First Name:</Text>
           <TextInput
@@ -91,12 +91,35 @@ export default function EditAccount ({ navigation }) {
             value={newEmail}
           />
         </View>
+        <View style={GlobalStyles.flexRow}>
+          <Text style={GlobalStyles.textBoxTitle}>New Password:</Text>
+          <TextInput
+            style={GlobalStyles.textBoxInput}
+            autoCapitalize='none'
+            autoCompleteType='password'
+            placeholder='(Leave blank to not change)'
+            placeholderTextColor='#999'
+            secureTextEntry
+            onChangeText={val => setNewPassword(val)}
+            value={newPassword}
+          />
+        </View>
+        <View style={GlobalStyles.flexRow}>
+          <Text style={GlobalStyles.textBoxTitle}>Confirm New Password:</Text>
+          <TextInput
+            style={GlobalStyles.textBoxInput}
+            autoCapitalize='none'
+            autoCompleteType='password'
+            placeholder='(Leave blank to not change)'
+            placeholderTextColor='#999'
+            secureTextEntry
+            onChangeText={val => setNewConfirmPassword(val)}
+            value={newConfirmPassword}
+          />
+        </View>
       </View>
-      <View style={{ flex: 0.2, justifyContent: 'flex-end' }}>
-        <Button title='Save' disabled={isLoading} onPress={onSave} />
-        <Pressable style={GlobalStyles.secondaryButton} onPress={onChangePassword}>
-          <Text style={GlobalStyles.secondaryButtonText}>Change Password</Text>
-        </Pressable>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <Button title='Save' disabled={(isLoading || (newPassword !== '' && newPassword !== newConfirmPassword))} onPress={onSave} />
       </View>
     </View>
   )
