@@ -12,7 +12,7 @@ export function useUser () {
 }
 
 export default function UserProvider ({ children }) {
-  const authFunctions = useAuth()
+  const { authFunctions } = useAuth()
 
   const [userState, dispatch] = React.useReducer((prevState, action) => {
     switch (action.type) {
