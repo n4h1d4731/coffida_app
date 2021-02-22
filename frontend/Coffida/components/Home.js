@@ -9,6 +9,7 @@ import SignIn from './SignIn'
 import SignUp from './SignUp'
 
 import Locations from './Locations'
+import LocationDetails from './LocationDetails'
 import Filters from './Filters'
 
 // import required custom context hooks
@@ -40,6 +41,7 @@ export default function Home () {
     return (
       <>
         <Stack.Screen name='Locations' component={Locations} options={customStackOptions} />
+        <Stack.Screen name='LocationDetails' component={LocationDetails} options={customStackOptions} />
         <Stack.Screen name='Filters' component={Filters} options={customStackOptions} />
       </>
     )

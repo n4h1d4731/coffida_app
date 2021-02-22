@@ -5,27 +5,27 @@ import { Picker } from '@react-native-picker/picker'
 import GlobalStyles from '../styles/GlobalStyles'
 
 export default function Filters ({ navigation, route }) {
-  const [locationFilters, setLocationFilters] = React.useState({})
+  const [filters, setFilters] = React.useState({})
 
   React.useEffect(() => {
-    if (route.params?.locationFilters) {
-      setLocationFilters({ ...route.params?.locationFilters })
+    if (route.params?.filters) {
+      setFilters({ ...route.params?.filters })
     }
-  }, [route.params?.locationFilters])
+  }, [route.params?.filters])
 
   const onApplyFilters = () => {
-    for (const locationProp in locationFilters) {
-        if (locationFilters[locationProp] === '') delete locationFilters[locationProp]
+    for (const filter in filters) {
+      if (filters[filter] === '') delete filters[filter]
     }
-    navigation.navigate('Locations', { locationFilters: locationFilters })
+    navigation.navigate('Locations', { filters: filters })
   }
 
   const onResetFilters = () => {
-      navigation.navigate('Locations', { locationFilters: {} })
+    navigation.navigate('Locations', { filters: {} })
   }
 
   const validateRating = (rating) => {
-      return (/^([0-5].[0-9])$|^([0-5])$/).test(rating) === true ? rating : ''
+    return (/^([0-5].[0-9])$|^([0-5])$/).test(rating) === true ? rating : ''
   }
 
   return (
@@ -35,8 +35,8 @@ export default function Filters ({ navigation, route }) {
           <Text style={GlobalStyles.textBoxTitle}>Town:</Text>
           <TextInput
             style={GlobalStyles.textInput}
-            onChangeText={q => setLocationFilters(prevLocations => ({ ...prevLocations, q: q }))}
-            value={locationFilters.q}
+            onChangeText={q => setFilters(prevLocations => ({ ...prevLocations, q: q }))}
+            value={filters.q}
           />
         </View>
         <View style={GlobalStyles.flexRow}>
@@ -44,8 +44,8 @@ export default function Filters ({ navigation, route }) {
           <TextInput
             style={GlobalStyles.textInput}
             keyboardType='numeric'
-            onChangeText={overall_rating => setLocationFilters(prevLocations => ({ ...prevLocations, overall_rating: validateRating(overall_rating) }))}
-            value={locationFilters.overall_rating}
+            onChangeText={overall_rating => setFilters(prevLocations => ({ ...prevLocations, overall_rating: validateRating(overall_rating) }))}
+            value={filters.overall_rating}
           />
         </View>
         <View style={GlobalStyles.flexRow}>
@@ -53,8 +53,8 @@ export default function Filters ({ navigation, route }) {
           <TextInput
             style={GlobalStyles.textInput}
             keyboardType='numeric'
-            onChangeText={price_rating => setLocationFilters(prevLocations => ({ ...prevLocations, price_rating: validateRating(price_rating) }))}
-            value={locationFilters.price_rating}
+            onChangeText={price_rating => setFilters(prevLocations => ({ ...prevLocations, price_rating: validateRating(price_rating) }))}
+            value={filters.price_rating}
           />
         </View>
         <View style={GlobalStyles.flexRow}>
@@ -62,8 +62,8 @@ export default function Filters ({ navigation, route }) {
           <TextInput
             style={GlobalStyles.textInput}
             keyboardType='numeric'
-            onChangeText={quality_rating => setLocationFilters(prevLocations => ({ ...prevLocations, quality_rating: validateRating(quality_rating) }))}
-            value={locationFilters.quality_rating}
+            onChangeText={quality_rating => setFilters(prevLocations => ({ ...prevLocations, quality_rating: validateRating(quality_rating) }))}
+            value={filters.quality_rating}
           />
         </View>
         <View style={GlobalStyles.flexRow}>
@@ -71,16 +71,16 @@ export default function Filters ({ navigation, route }) {
           <TextInput
             style={GlobalStyles.textInput}
             keyboardType='numeric'
-            onChangeText={clenliness_rating => setLocationFilters(prevLocations => ({ ...prevLocations, clenliness_rating: validateRating(clenliness_rating) }))}
-            value={locationFilters.clenliness_rating}
+            onChangeText={clenliness_rating => setFilters(prevLocations => ({ ...prevLocations, clenliness_rating: validateRating(clenliness_rating) }))}
+            value={filters.clenliness_rating}
           />
         </View>
         <View style={GlobalStyles.flexRow}>
           <Text style={GlobalStyles.textBoxTitle}>Search In:</Text>
           <Picker
             style={GlobalStyles.textInput}
-            onValueChange={search_in => setLocationFilters(prevLocations => ({ ...prevLocations, search_in: search_in }))}
-            selectedValue={locationFilters.search_in}
+            onValueChange={search_in => setFilters(prevLocations => ({ ...prevLocations, search_in: search_in }))}
+            selectedValue={filters.search_in}
           >
             <Picker.Item label='All' value='' />
             <Picker.Item label='Favourite' value='favourite' />

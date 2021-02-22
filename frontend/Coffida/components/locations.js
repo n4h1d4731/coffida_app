@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ActivityIndicator, FlatList, ToastAndroid, Button } from 'react-native'
+import { ActivityIndicator, Button, FlatList, Pressable, Text, View } from 'react-native'
 
 // import required contexts
 import { useAuth } from '../contexts/AuthProvider'
@@ -7,135 +7,58 @@ import { useAuth } from '../contexts/AuthProvider'
 // import required components
 import Location from './Location'
 
+// import required hooks
+import usePaginatedLocations from '../hooks/usePaginatedLocations'
+
+// styles
 import GlobalStyles from '../styles/GlobalStyles'
 
-const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
-
 export default function Locations ({ navigation, route }) {
-  const isPaginationDisabled = true
+  const [filters, setFilters] = React.useState({})
+  const [offset, setOffset] = React.useState(0)
+  const limit = 10
 
-  const [isLoadingFullData, setIsLoadingFullData] = React.useState(false)
-  const [isLoadingNewData, setIsLoadingNewData] = React.useState(false)
+  const { authState } = useAuth()
 
-  const [locationsData, setLocationsData] = React.useState([])
-
-  const [locationFilters, setLocationFilters] = React.useState({})
-  const [locationFilterOffset, setLocationFilterOffset] = React.useState(0)
-  const locationFilterLimit = 20
-
-  const { authState, authFunctions } = useAuth()
-
-  const getLocations = async (userToken, filters, limit, offset) => {
-    const allFilters = ({ ...filters, ...{ limit: limit, offset: offset } })
-    const url = API_ENDPOINT + '/find?' + (Object.keys(allFilters).map(key => key + '=' + allFilters[key]).join('&'))
-
-    return fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-Authorization': userToken
-      }
-    }).then(async res => {
-      if (res.status === 401) {
-        authFunctions.signOut()
-          .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
-
-        return { success: false, message: 'Login no longer valid' }
-      } else if (res.status === 500) return { success: false, message: 'Server Error' }
-      else {
-        const jsonData = await res.json()
-        return { success: true, data: jsonData }
-      }
-    }).catch(e => {
-      console.log('Failed to get locations...')
-      console.log(e)
-
-      return { success: false, message: 'Failed to get the locations' }
-    })
-  }
-
+  const {
+    loading,
+    error,
+    locations,
+    hasMore
+  } = usePaginatedLocations(authState.userToken, filters, limit, offset)
+  
   const onLastLocationReached = () => {
-    if (isLoadingFullData === true || isLoadingNewData === true || isPaginationDisabled) return // do not actually run this function as the server returns duplicate records
+    if (hasMore === false || loading) return
 
-    setIsLoadingNewData(true)
-    getLocations(authState.userToken, locationFilters, locationFilterLimit, locationFilterOffset + 1)
-      .then(res => {
-        if (res.data.count === 0) {
-          setIsLoadingNewData(false)
-          return
-        }
-        const newLocationsData = res.data.map(location => ({
-          id: location.location_id,
-          name: location.location_name,
-          town: location.location_town,
-          photoPath: location.photo_path,
-          overallRating: location.avg_overall_rating
-        }))
-
-        setLocationFilterOffset(prev => prev + 1)
-        setLocationsData(prevLocationsData => [...prevLocationsData, ...newLocationsData])
-        setIsLoadingNewData(false)
-      })
+    setOffset(prevOffset => prevOffset + limit)
   }
 
   const onFiltersPress = () => {
-    navigation.navigate('Filters', { locationFilters: locationFilters })
+    navigation.navigate('Filters', { filters })
   }
 
   React.useEffect(() => {
-    setIsLoadingFullData(true)
-    getLocations(authState.userToken, locationFilters, locationFilterLimit, locationFilterOffset)
-      .then(res => {
-        if (res.success === false) {
-          ToastAndroid.show(res.message, ToastAndroid.SHORT)
-          return
-        }
-
-        setLocationsData(res.data.map(location => ({
-          id: location.location_id,
-          name: location.location_name,
-          town: location.location_town,
-          photoPath: location.photo_path,
-          overallRating: location.avg_overall_rating
-        })))
-        setIsLoadingFullData(false)
-      })
-  }, [locationFilters])
-
-  React.useLayoutEffect(() => {
-    if (route.params?.locationFilters) {
-      setLocationFilters({ ...route.params?.locationFilters })
+    if (route.params?.filters) {
+      setFilters({ ...route.params?.filters })
+      setOffset(0)
     }
-  }, [route.params?.locationFilters])
+  }, [route.params?.filters])
 
   return (
-    <View style={[GlobalStyles.contentWrapper, { justifyContent: 'space-between' }]}>
-      {
-        isLoadingFullData === false
-          ? (
-            <FlatList
-              onEndReached={onLastLocationReached}
-              keyExtractor={(item) => item.id.toString()}
-              data={locationsData}
-              renderItem={({ item }) => (
-                <Location
-                  location={{
-                    id: item.id,
-                    name: item.name,
-                    town: item.town,
-                    photoPath: item.photoPath,
-                    overallRating: item.overallRating
-                  }}
-                />
-              )}
-            />
-          ) : (
-            <ActivityIndicator size='large' color='#fff' style={{ marginTop: 10 }} />
-          )
-      }
-      <View>
-        {isLoadingNewData ? (<ActivityIndicator size='small' color='#fff' style={{ marginBottom: 10 }} />) : (<></>)}
-        <Button color='#111' title='Filter' onPress={onFiltersPress} />
-      </View>
+    <View style={[GlobalStyles.contentWrapper, { flex: 1, justifyContent: 'space-between' }]}>
+      <FlatList
+        onEndReached={onLastLocationReached}
+        keyExtractor={(item) => item.id.toString()}
+        data={locations}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => { navigation.navigate('LocationDetails', { locationId: item.id }) }}>
+            <Location location={item} />
+          </Pressable>
+        )}
+      />
+      {error ? <Text>Failed to load {hasMore ? 'more' : ''} locations</Text> : <></>}
+      {loading ? <ActivityIndicator size='large' color='#fff' /> : <></>}
+      <Button color='#111' title='Filter' onPress={onFiltersPress} />
     </View>
   )
 }
