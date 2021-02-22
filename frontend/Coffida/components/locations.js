@@ -28,7 +28,6 @@ export default function Locations ({ navigation, route }) {
   } = usePaginatedLocations(authState.userToken, filters, limit, offset)
   
   const onLastLocationReached = () => {
-    console.log(hasMore)
     if (hasMore === false || loading) return
 
     setOffset(prevOffset => prevOffset + limit)
@@ -41,6 +40,7 @@ export default function Locations ({ navigation, route }) {
   React.useEffect(() => {
     if (route.params?.filters) {
       setFilters({ ...route.params?.filters })
+      setOffset(0)
     }
   }, [route.params?.filters])
 
