@@ -16,7 +16,7 @@ import GlobalStyles from '../styles/GlobalStyles'
 export default function Locations ({ navigation, route }) {
   const [filters, setFilters] = React.useState({})
   const [offset, setOffset] = React.useState(0)
-  const limit = 20
+  const limit = 10
 
   const { authState } = useAuth()
 
@@ -28,9 +28,10 @@ export default function Locations ({ navigation, route }) {
   } = usePaginatedLocations(authState.userToken, filters, limit, offset)
   
   const onLastLocationReached = () => {
+    console.log(hasMore)
     if (hasMore === false || loading) return
 
-    setOffset(prevOffset => prevOffset + 1)
+    setOffset(prevOffset => prevOffset + limit)
   }
 
   const onFiltersPress = () => {

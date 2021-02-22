@@ -6,7 +6,7 @@ export default function usePaginatedLocations (userToken, filters, limit, offset
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(false)
   const [locations, setLocations] = React.useState([])
-  const [hasMore, setHasMore] = React.useState(false)
+  const [hasMore, setHasMore] = React.useState(true)
 
   const { locationFunctions } = useLocation()
 
