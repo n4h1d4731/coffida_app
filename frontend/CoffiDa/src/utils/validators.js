@@ -4,6 +4,12 @@ const validateEmail = (email) => {
   return (emailValidatorRegex.test(email) === true)
 }
 
+const validateNumber = (value, min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY) => {
+  const parsedValue = Number.parseInt(value)
+  return !(Number.isNaN(parsedValue) || parsedValue < min || parsedValue > max)
+}
+
 export {
-  validateEmail
+  validateEmail,
+  validateNumber
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
-import { Card, Text } from 'react-native-elements'
+import { Button, Card, Text } from 'react-native-elements'
 
 // import required providers
 import { useReview } from '_providers/review'
@@ -23,6 +23,10 @@ export default function Review (props) {
         setImageData(res.data)
         setHasImage(true)
       })
+  }
+
+  function renderButtons () {
+    // TODO: conditionally display button to allow deleting or editing of reviews
   }
 
   useEffect(() => {
@@ -52,6 +56,9 @@ export default function Review (props) {
       <Card.Divider />
       <View style={GlobalStyles.reviewBodyContainer}>
         <Text style={GlobalStyles.cardDetailText}>{props.review.body}</Text>
+      </View>
+      <View>
+        {renderButtons()}
       </View>
     </Card>
   )
