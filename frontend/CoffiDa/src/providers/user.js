@@ -22,9 +22,9 @@ export default function UserProvider ({ children }) {
           firstName: action.firstName,
           lastName: action.lastName,
           email: action.email,
-          favouriteLocations: action.favouriteLocations,
-          reviews: action.reviews,
-          likedReviews: action.likedReviews
+          favouriteLocations: action.favouriteLocations || [],
+          reviews: action.reviews || [],
+          likedReviews: action.likedReviews || []
         }
       }
     }
