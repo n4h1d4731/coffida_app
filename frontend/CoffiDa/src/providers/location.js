@@ -12,17 +12,17 @@ export function useLocation () {
 }
 
 export default function Location ({ children }) {
-  const { authService } = useAuth()
+  const { authState, authService } = useAuth()
 
   const locationService = React.useMemo(() => ({
-    getAllLocations: async (userToken, filters, limit, offset) => {
+    getAllLocations: async (filters, limit, offset) => {
       const allFilters = ({ ...filters, ...{ limit: limit, offset: offset } })
       const url = API_ENDPOINT + '/find?' + (Object.keys(allFilters).map(key => key + '=' + allFilters[key]).join('&'))
 
       return fetch(url, {
         method: 'GET',
         headers: {
-          'X-Authorization': userToken
+          'X-Authorization': authState.userToken
         }
       }).then(async res => {
         if (res.status === 401) {
@@ -55,30 +55,6 @@ export default function Location ({ children }) {
           console.log(e)
 
           return { success: 'false', message: 'Failed to get the location' }
-        })
-    },
-    getAllFavourites: (userToken) => {
-      return fetch(API_ENDPOINT + '/find?search_in=favourite', {
-        method: 'POST',
-        headers: {
-          'X-Authorization': userToken
-        }
-      })
-        .then(async res => {
-          if (res.status === 400) return { success: false, message: 'Failed to get location data' }
-          if (res.status === 500) return { success: false, message: 'Server Error' }
-
-          if (res.status === 401) {
-            authService.signOut()
-              .then(res => { if (res.success === false) ToastAndroid.show(res.message, ToastAndroid.SHORT) })
-
-            return { success: false, message: 'Server Error' }
-          }
-
-          if (res.status === 404) return { success: true, data: [] }
-
-          const jsonData = await res.json()
-          return { success: true, data: jsonData }
         })
     }
   }), [])

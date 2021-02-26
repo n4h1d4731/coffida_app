@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { ToastAndroid } from 'react-native'
 
 import { useAuth } from '_providers/auth'
@@ -12,7 +12,7 @@ export function useUser () {
 }
 
 export default function UserProvider ({ children }) {
-  const { authService } = useAuth()
+  const { authState, authService } = useAuth()
 
   const [userState, dispatch] = React.useReducer((prevState, action) => {
     switch (action.type) {
@@ -21,22 +21,28 @@ export default function UserProvider ({ children }) {
           ...prevState,
           firstName: action.firstName,
           lastName: action.lastName,
-          email: action.email
+          email: action.email,
+          favouriteLocations: action.favouriteLocations,
+          reviews: action.reviews,
+          likedReviews: action.likedReviews
         }
       }
     }
   }, {
     firstName: '',
     lastName: '',
-    email: ''
+    email: '',
+    favouriteLocations: [],
+    reviews: [],
+    likedReviews: []
   })
 
-  const userService = React.useMemo(() => ({
-    fetchDetails: async data => {
-      return fetch(API_ENDPOINT + `/user/${data.userId}`, {
+  const userService = useMemo(() => ({
+    fetchDetails: async () => {
+      return fetch(API_ENDPOINT + `/user/${authState.userId}`, {
         method: 'GET',
         headers: {
-          'X-Authorization': data.userToken
+          'X-Authorization': authState.userToken
         }
       }).then(async res => {
         if (res.status === 401) {
@@ -50,9 +56,17 @@ export default function UserProvider ({ children }) {
           return { success: true, data: jsonData }
         }
       }).then(res => {
-        if (res.status === false) return res
+        if (res.success === false) return res
 
-        dispatch({ type: 'UPDATE_DETAILS', firstName: res.data.first_name, lastName: res.data.last_name, email: res.data.email })
+        dispatch({
+          type: 'UPDATE_DETAILS',
+          firstName: res.data.first_name,
+          lastName: res.data.last_name,
+          email: res.data.email,
+          favouriteLocations: res.data.favourite_locations.map(favouriteLocation => favouriteLocation.location_id),
+          reviews: res.data.reviews.map(review => review.review?.review_id),
+          likedReviews: res.data.liked_reviews.map(review => review.review?.review_id)
+        })
         return res
       }).catch(e => {
         console.log('Failed to load user details...')
@@ -69,10 +83,10 @@ export default function UserProvider ({ children }) {
       }
       if (data.newPassword != null) requestData.password = data.newPassword
 
-      return fetch(API_ENDPOINT + `/user/${data.userId}`, {
+      return fetch(API_ENDPOINT + `/user/${authState.userId}`, {
         method: 'PATCH',
         headers: {
-          'X-Authorization': data.userToken,
+          'X-Authorization': authState.userToken,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestData)
@@ -97,10 +111,29 @@ export default function UserProvider ({ children }) {
 
         return { success: false, message: 'Failed to update your details' }
       })
+    },
+    setFavouriteLocation: async data => {
+      return fetch(API_ENDPOINT + `/location/${data.locationId}/favourite`, {
+        method: data.favourite === true ? 'POST' : 'DELETE',
+        headers: {
+          'X-Authorization': authState.userToken
+        }
+      })
+        .then(res => {
+          if (res.status === 200) return { success: true }
+          throw new Error('Failed to favourite location')
+        })
+        .catch(e => {
+          return { success: false, message: e }
+        })
     }
   }),
   []
   )
+
+  useEffect(() => {
+    userService.fetchDetails()
+  }, [])
 
   return (
     <UserContext.Provider value={{ userState, userService }}>

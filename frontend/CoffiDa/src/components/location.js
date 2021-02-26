@@ -1,6 +1,9 @@
 import React, { useCallback, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator, ToastAndroid, View } from 'react-native'
 import { Button, Card, Text } from 'react-native-elements'
+
+// import required providers
+import { useUser } from '_providers/user'
 
 // import required style
 import { Colors, GlobalStyles } from '_styles'
@@ -9,8 +12,22 @@ export default function Location (props) {
   const [imageSource, setImageSource] = useState({ uri: props.location.photoPath })
   const location = props.location
 
+  const { userService } = useUser()
+
   const handleViewReviews = () => {
     props.navigation.navigate('Reviews', { locationId: location.id })
+  }
+
+  const handleToggleFavourite = () => {
+    userService.setFavouriteLocation({ locationId: location.id, favourite: !props.isFavourite })
+      .then(res => {
+        if (res.success === false) {
+          ToastAndroid.show(`Failed to ${props.isFavourite === true ? '' : 'un'}favourite location`, ToastAndroid.SHORT)
+          return
+        }
+
+        userService.fetchDetails() // repopulate all user data to refresh the change in location favourites
+      })
   }
 
   const handleImageLoadError = useCallback(() => {
@@ -54,6 +71,12 @@ export default function Location (props) {
         buttonStyle={{ backgroundColor: Colors.PRIMARY_LIGHT_COLOR }}
         titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
         onPress={handleViewReviews}
+      />
+      <Button
+        title={props.isFavourite !== true ? 'Favourite' : 'Unfavourite'}
+        type='clear'
+        titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
+        onPress={handleToggleFavourite}
       />
     </Card>
   )
