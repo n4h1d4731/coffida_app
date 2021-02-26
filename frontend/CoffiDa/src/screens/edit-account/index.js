@@ -3,7 +3,6 @@ import { ToastAndroid, View } from 'react-native'
 import { Button, Input } from 'react-native-elements'
 
 // import required providers
-import { useAuth } from '_providers/auth'
 import { useUser } from '_providers/user'
 
 // import required components
@@ -17,7 +16,7 @@ import { validateEmail } from '_utils/validators'
 import { width } from 'react-native-dimension'
 
 export default function EditAccount ({ navigation }) {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [newFirstName, setNewFirstName] = useState('')
   const [newLastName, setNewLastName] = useState('')
@@ -25,8 +24,7 @@ export default function EditAccount ({ navigation }) {
   const [newPassword, setNewPassword] = useState('')
   const [newConfirmPassword, setNewConfirmPassword] = useState('')
 
-  const { authState } = useAuth()
-  const { userService } = useUser()
+  const { userState, userService } = useUser()
 
   const handleUpdateAccount = () => {
     if (newFirstName === '') {
@@ -50,8 +48,11 @@ export default function EditAccount ({ navigation }) {
       ToastAndroid.show('Passwords do not match!', ToastAndroid.SHORT)
       return
     }
-    userService.saveDetails({ userToken: authState.userToken, userId: authState.userId, newFirstName, newLastName, newEmail, newPassword })
+
+    setIsLoading(true)
+    userService.saveDetails({ newFirstName, newLastName, newEmail, newPassword })
       .then(res => {
+        setIsLoading(false)
         if (res.success === false) {
           ToastAndroid.show(res.message, ToastAndroid.SHORT)
           return
@@ -63,9 +64,6 @@ export default function EditAccount ({ navigation }) {
   }
 
   const handleRefreshDetails = () => {
-    setNewFirstName('')
-    setNewLastName('')
-    setNewEmail('')
     setNewPassword('')
     setNewConfirmPassword('')
 
@@ -73,20 +71,9 @@ export default function EditAccount ({ navigation }) {
   }
 
   const fetchCurrentDetails = () => {
-    setIsLoading(true)
-    userService.fetchDetails({ userToken: authState.userToken, userId: authState.userId })
-      .then(res => {
-        if (res.success === false) {
-          ToastAndroid.show(res.message, ToastAndroid.SHORT)
-          return
-        }
-
-        setNewFirstName(res.data.first_name)
-        setNewLastName(res.data.last_name)
-        setNewEmail(res.data.email)
-
-        setIsLoading(false)
-      })
+    setNewFirstName(userState.firstName)
+    setNewLastName(userState.lastName)
+    setNewEmail(userState.email)
   }
 
   useEffect(() => {

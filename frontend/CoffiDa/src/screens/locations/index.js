@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, ToastAndroid, View } from 'react-native'
 import { Text } from 'react-native-elements'
 
 // import required providers
-import { useAuth } from '_providers/auth'
+import { useUser } from '_providers/user'
 import { useFilters } from '_providers/filters'
 
 // import required components
@@ -19,7 +19,7 @@ export default function Locations ({ navigation, route }) {
   const [offset, setOffset] = React.useState(0)
   const limit = 20
 
-  const { authState } = useAuth()
+  const { userState } = useUser()
   const { filtersState } = useFilters()
 
   const {
@@ -27,7 +27,7 @@ export default function Locations ({ navigation, route }) {
     error,
     locations,
     hasMore
-  } = useLocationsSearch(authState.userToken, filtersState, limit, offset)
+  } = useLocationsSearch(filtersState, limit, offset)
   if (error) {
     ToastAndroid.show(`Failed to load ${hasMore === true ? 'more' : ''} locations`, ToastAndroid.SHORT)
   }
@@ -43,13 +43,14 @@ export default function Locations ({ navigation, route }) {
     )
   }, [])
 
-  const keyExtractor = useCallback((item, index) => {
-    return index.toString()
+  const keyExtractor = useCallback((item) => {
+    return item.id.toString()
   }, [])
 
   const renderItem = useCallback(({ item }) => {
-    return <Location navigation={navigation} location={item} />
-  }, [])
+    const isFavourite = userState.favouriteLocations.includes(item.id)
+    return <Location navigation={navigation} isFavourite={isFavourite} location={item} />
+  }, [userState.favouriteLocations])
 
   const handleLastLocationReached = useCallback(() => {
     if (hasMore === false || loading === true) {

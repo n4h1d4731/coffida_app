@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useLocation } from '_providers/location'
 
-const useLocationsSearch = (userToken, filters, limit, offset) => {
+const useLocationsSearch = (filters, limit, offset) => {
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(false)
   const [locations, setLocations] = React.useState([])
@@ -18,7 +18,7 @@ const useLocationsSearch = (userToken, filters, limit, offset) => {
     setLoading(true)
     setError(false)
 
-    locationService.getAllLocations(userToken, filters, limit, offset)
+    locationService.getAllLocations(filters, limit, offset)
       .then(res => {
         setLoading(false)
 

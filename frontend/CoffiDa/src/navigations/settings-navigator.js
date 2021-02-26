@@ -2,9 +2,6 @@ import React from 'react'
 
 import { createStackNavigator } from '@react-navigation/stack'
 
-// import required providers
-import UserProvider from '_providers/user'
-
 // import required screens
 import Settings from '_screens/settings'
 import EditAccount from '_screens/edit-account'
@@ -25,11 +22,9 @@ export default function SettingsNavigator () {
   })
 
   return (
-    <UserProvider>
-      <Stack.Navigator initialRouteName='Settings'>
-        <Stack.Screen name='Settings' component={Settings} options={customScreenOptions('Settings')} />
-        <Stack.Screen name='EditAccount' component={EditAccount} options={customScreenOptions('Edit Account')} />
-      </Stack.Navigator>
-    </UserProvider>
+    <Stack.Navigator initialRouteName='Settings'>
+      <Stack.Screen name='Settings' component={Settings} options={customScreenOptions('Settings')} />
+      <Stack.Screen name='EditAccount' component={EditAccount} options={customScreenOptions('Edit Account')} />
+    </Stack.Navigator>
   )
 }

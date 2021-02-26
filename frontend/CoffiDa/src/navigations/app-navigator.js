@@ -2,6 +2,7 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 // import required providers
+import UserProvider from '_providers/user'
 import FiltersProvider from '_providers/filters'
 
 // import required components
@@ -47,12 +48,14 @@ export default function AppNavigation () {
   })
 
   return (
-    <FiltersProvider>
-      <Tab.Navigator initialRouteName='LocationStack' tabBarOptions={customTabBarOptions}>
-        <Tab.Screen name='Filters' component={FiltersScreen} options={customScreenOptions('Location Filters', 'filter')} />
-        <Tab.Screen name='LocationStack' component={LocationStack} options={customScreenOptions('Locations', 'coffee')} />
-        <Tab.Screen name='SettingsStack' component={SettingsStack} options={customScreenOptions('Settings', 'cogs')} />
-      </Tab.Navigator>
-    </FiltersProvider>
+    <UserProvider>
+      <FiltersProvider>
+        <Tab.Navigator initialRouteName='LocationStack' tabBarOptions={customTabBarOptions}>
+          <Tab.Screen name='Filters' component={FiltersScreen} options={customScreenOptions('Location Filters', 'filter')} />
+          <Tab.Screen name='LocationStack' component={LocationStack} options={customScreenOptions('Locations', 'coffee')} />
+          <Tab.Screen name='SettingsStack' component={SettingsStack} options={customScreenOptions('Settings', 'cogs')} />
+        </Tab.Navigator>
+      </FiltersProvider>
+    </UserProvider>
   )
 }
