@@ -12,7 +12,7 @@ export function useReview () {
   return React.useContext(ReviewContext)
 }
 
-export default function Filter ({ children }) {
+export default function Review ({ children }) {
   const { authState } = useAuth()
 
   const reviewService = React.useMemo(() => ({
@@ -44,6 +44,18 @@ export default function Filter ({ children }) {
       })
         .then(res => {
           return (res.status !== 200) ? { success: false, message: 'Failed to update the review' } : { success: true }
+        })
+    },
+    deleteReview: (locationId, reviewId) => {
+      return fetch(API_ENDPOINT + `/location/${locationId}/review/${reviewId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Authorization': authState.userToken
+        }
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 404) return { success: false, message: 'Failed to delete the review' }
+          return { success: true }
         })
     }
   }), [])

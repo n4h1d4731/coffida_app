@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator, ToastAndroid, View } from 'react-native'
 import { Button, Card, Text } from 'react-native-elements'
 
 // import required providers
@@ -11,6 +11,7 @@ import { Colors, GlobalStyles } from '_styles'
 export default function Review (props) {
   if (props.review == null || props.locationId == null) return (<></>)
 
+  const [isDeleting, setIsDeleting] = useState(false)
   const [hasImage, setHasImage] = useState(false)
   const [imageData, setImageData] = useState({})
 
@@ -21,7 +22,17 @@ export default function Review (props) {
   }
 
   function handleDeleteReview () {
-    // TODO: delete review using the current location id and review id
+    setIsDeleting(true)
+    reviewService.deleteReview(props.locationId, props.review.id)
+      .then(res => {
+        setIsDeleting(false)
+        if (res.success === false) {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT)
+          return
+        }
+        ToastAndroid.show('Deleted the Review', ToastAndroid.SHORT)
+        props.navigation.navigate('Reviews', { refresh: true, locationId: props.locationId })
+      })
   }
 
   function renderImageIfAvailable () {
@@ -50,6 +61,7 @@ export default function Review (props) {
             type='clear'
             titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
             onPress={handleDeleteReview}
+            disabled={isDeleting}
           />
         </>
       )
