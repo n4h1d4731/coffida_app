@@ -2,6 +2,8 @@ import React from 'react'
 
 import { readAsDataURL } from 'promise-file-reader'
 
+import { useAuth } from '_providers/auth'
+
 const API_ENDPOINT = 'http://10.0.2.2:3333/api/1.0.0'
 
 const ReviewContext = React.createContext()
@@ -10,7 +12,9 @@ export function useReview () {
   return React.useContext(ReviewContext)
 }
 
-export default function Location ({ children }) {
+export default function Filter ({ children }) {
+  const { authState } = useAuth()
+
   const reviewService = React.useMemo(() => ({
     getReviewPhoto: async (locationId, reviewId) => {
       return fetch(API_ENDPOINT + `/location/${locationId}/review/${reviewId}/photo`)
@@ -27,6 +31,19 @@ export default function Location ({ children }) {
           console.log(e)
 
           return { success: false, message: 'Failed to get the locations' }
+        })
+    },
+    updateReview: (locationId, reviewId, review) => {
+      return fetch(API_ENDPOINT + `/location/${locationId}/review/${reviewId}`, {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': authState.userToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(review)
+      })
+        .then(res => {
+          return (res.status !== 200) ? { success: false, message: 'Failed to update the review' } : { success: true }
         })
     }
   }), [])

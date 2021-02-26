@@ -6,7 +6,7 @@ import { Button, Card, Text } from 'react-native-elements'
 import { useReview } from '_providers/review'
 
 // import required style
-import { GlobalStyles } from '_styles'
+import { Colors, GlobalStyles } from '_styles'
 
 export default function Review (props) {
   if (props.review == null || props.locationId == null) return (<></>)
@@ -15,6 +15,14 @@ export default function Review (props) {
   const [imageData, setImageData] = useState({})
 
   const { reviewService } = useReview()
+
+  function handleUpdateReview () {
+    props.navigation.navigate('UpdateReview', { locationId: props.locationId, review: props.review })
+  }
+
+  function handleDeleteReview () {
+    // TODO: delete review using the current location id and review id
+  }
 
   function renderImageIfAvailable () {
     reviewService.getReviewPhoto(props.locationId, props.review.id)
@@ -26,7 +34,26 @@ export default function Review (props) {
   }
 
   function renderButtons () {
-    // TODO: conditionally display button to allow deleting or editing of reviews
+    if (props.isUserReview === true) {
+      return (
+        <>
+          <Card.Divider />
+          <Button
+            title='Update Review'
+            type='solid'
+            buttonStyle={{ backgroundColor: Colors.PRIMARY_LIGHT_COLOR }}
+            titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
+            onPress={handleUpdateReview}
+          />
+          <Button
+            title='Delete Review'
+            type='clear'
+            titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
+            onPress={handleDeleteReview}
+          />
+        </>
+      )
+    }
   }
 
   useEffect(() => {

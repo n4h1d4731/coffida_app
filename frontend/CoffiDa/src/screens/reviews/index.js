@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { FlatList, ToastAndroid, View } from 'react-native'
 import { Button } from 'react-native-elements'
 
 // import required providers
 import { useLocation } from '_providers/location'
+import { useUser } from '_providers/user'
 
 // import required components
 import Review from '_components/review'
@@ -15,6 +16,7 @@ export default function Reviews ({ navigation, route }) {
   const [reviews, setReviews] = useState([])
 
   const { locationService } = useLocation()
+  const { userState } = useUser()
 
   function updateReviews () {
     locationService.getLocation(route.params?.locationId)
@@ -42,19 +44,21 @@ export default function Reviews ({ navigation, route }) {
   }
 
   function keyExtractor (item, index) {
-    return index.toString()
+    return item.id.toString()
   }
 
   function renderItem ({ item }) {
-    return <Review locationId={route.params?.locationId} review={item} />
+    const isUserReview = userState.reviews.includes(item.id)
+    return <Review navigation={navigation} isUserReview={isUserReview} locationId={route.params?.locationId} review={item} />
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (route.params?.locationId == null) {
       console.error('Navigated to route without supplying locationId')
       navigation.navigate('Locations')
     }
     updateReviews()
+    if (route.params?.refresh === true) route.params.refresh = false
   }, [route.params?.locationId, route.params?.refresh])
 
   return (
