@@ -10,6 +10,7 @@ import { Colors, GlobalStyles } from '_styles'
 
 export default function Location (props) {
   const [imageSource, setImageSource] = useState({ uri: props.location.photoPath })
+  const [togglingFavourite, setTogglingFavourite] = useState(false)
   const location = props.location
 
   const { userService } = useUser()
@@ -19,6 +20,7 @@ export default function Location (props) {
   }
 
   const handleToggleFavourite = () => {
+    setTogglingFavourite(true)
     userService.setFavouriteLocation({ locationId: location.id, favourite: !props.isFavourite })
       .then(res => {
         if (res.success === false) {
@@ -27,6 +29,9 @@ export default function Location (props) {
         }
 
         userService.fetchDetails() // repopulate all user data to refresh the change in location favourites
+          .then(() => {
+            setTogglingFavourite(false)
+          })
       })
   }
 
@@ -51,19 +56,19 @@ export default function Location (props) {
       </View>
       <View style={GlobalStyles.cardDetail}>
         <Text style={GlobalStyles.cardDetailText}>Avg Overall Rating:</Text>
-        <Text style={GlobalStyles.cardDetailText}>{location.avgOverallRating} / 5</Text>
+        <Text style={GlobalStyles.cardDetailText}>{location.avgOverallRating.toFixed(1)} / 5</Text>
       </View>
       <View style={GlobalStyles.cardDetail}>
         <Text style={GlobalStyles.cardDetailText}>Avg Price Rating:</Text>
-        <Text style={GlobalStyles.cardDetailText}>{location.avgPriceRating} / 5</Text>
+        <Text style={GlobalStyles.cardDetailText}>{location.avgPriceRating.toFixed(1)} / 5</Text>
       </View>
       <View style={GlobalStyles.cardDetail}>
         <Text style={GlobalStyles.cardDetailText}>Avg Quality Rating:</Text>
-        <Text style={GlobalStyles.cardDetailText}>{location.avgQualityRating} / 5</Text>
+        <Text style={GlobalStyles.cardDetailText}>{location.avgQualityRating.toFixed(1)} / 5</Text>
       </View>
       <View style={GlobalStyles.cardDetail}>
         <Text style={GlobalStyles.cardDetailText}>Avg Cleanliness Rating:</Text>
-        <Text style={GlobalStyles.cardDetailText}>{location.avgCleanlinessRating} / 5</Text>
+        <Text style={GlobalStyles.cardDetailText}>{location.avgCleanlinessRating.toFixed(1)} / 5</Text>
       </View>
       <Button
         title='View Reviews'
@@ -77,6 +82,7 @@ export default function Location (props) {
         type='clear'
         titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
         onPress={handleToggleFavourite}
+        loading={togglingFavourite}
       />
     </Card>
   )

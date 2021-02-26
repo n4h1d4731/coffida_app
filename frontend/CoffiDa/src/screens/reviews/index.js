@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FlatList, ToastAndroid, View } from 'react-native'
+import { Button } from 'react-native-elements'
 
 // import required providers
 import { useLocation } from '_providers/location'
@@ -8,7 +9,7 @@ import { useLocation } from '_providers/location'
 import Review from '_components/review'
 
 // import requiered styles
-import { GlobalStyles } from '_styles'
+import { Colors, GlobalStyles } from '_styles'
 
 export default function Reviews ({ navigation, route }) {
   const [reviews, setReviews] = useState([])
@@ -36,6 +37,10 @@ export default function Reviews ({ navigation, route }) {
       })
   }
 
+  function handleAddReview () {
+    navigation.navigate('AddReview', { locationId: route.params?.locationId })
+  }
+
   function keyExtractor (item, index) {
     return index.toString()
   }
@@ -50,14 +55,21 @@ export default function Reviews ({ navigation, route }) {
       navigation.navigate('Locations')
     }
     updateReviews()
-  }, [route.params?.locationId])
+  }, [route.params?.locationId, route.params?.refresh])
 
   return (
     <View style={GlobalStyles.screenWrapper}>
+      <Button
+        title='Add Review'
+        type='solid'
+        buttonStyle={{ backgroundColor: Colors.PRIMARY_LIGHT_COLOR }}
+        titleStyle={{ color: Colors.PRIMARY_TEXT_COLOR }}
+        onPress={handleAddReview}
+      />
       <FlatList
         keyExtractor={keyExtractor}
         data={reviews}
-        maxToRenderPerBatch={3}
+        maxToRenderPerBatch={6}
         renderItem={renderItem}
       />
     </View>

@@ -56,6 +56,19 @@ export default function Location ({ children }) {
 
           return { success: 'false', message: 'Failed to get the location' }
         })
+    },
+    addReview: (locationId, review) => {
+      return fetch(API_ENDPOINT + `/location/${locationId}/review`, {
+        method: 'POST',
+        headers: {
+          'X-Authorization': authState.userToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(review)
+      })
+        .then(res => {
+          return (res.status !== 201) ? { success: false, message: 'Failed to save the review' } : { success: true }
+        })
     }
   }), [])
 

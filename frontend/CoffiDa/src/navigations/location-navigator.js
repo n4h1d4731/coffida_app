@@ -8,6 +8,7 @@ import ReviewProvider from '_providers/review'
 // import required screens
 import Locations from '_screens/locations'
 import Reviews from '_screens/reviews'
+import AddReview from '_screens/add-review'
 
 // import required styles
 import { Colors } from '_styles'
@@ -30,6 +31,7 @@ export default function LocationNavigator () {
         <Stack.Navigator initialRouteName='Locations'>
           <Stack.Screen name='Locations' component={Locations} options={customScreenOptions('Locations')} />
           <Stack.Screen name='Reviews' component={Reviews} options={customScreenOptions('Reviews')} />
+          <Stack.Screen name='AddReview' component={AddReview} options={customScreenOptions('Add Review')} />
         </Stack.Navigator>
       </ReviewProvider>
     </LocationProvider>
