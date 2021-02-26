@@ -1,26 +1,20 @@
-import 'react-native-gesture-handler'
-
 import React from 'react'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-// import required custom components
-import Main from './components/Main'
+import { NavigationContainer } from '@react-navigation/native'
 
-// import required contexts
-import { MenuProvider } from 'react-native-popup-menu' // provider from node-module
-import AuthProvider from './contexts/AuthProvider'
-import UserProvider from './contexts/UserProvider'
-import LocationProvider from './contexts/LocationProvider'
+import AuthProvider from '_providers/auth'
+
+import RootStack from '_navigations/root-navigator'
 
 export default function App () {
   return (
-    <MenuProvider>
+    <SafeAreaProvider>
       <AuthProvider>
-        <UserProvider>
-          <LocationProvider>
-            <Main />
-          </LocationProvider>
-        </UserProvider>
+        <NavigationContainer>
+          <RootStack />
+        </NavigationContainer>
       </AuthProvider>
-    </MenuProvider>
+    </SafeAreaProvider>
   )
 }

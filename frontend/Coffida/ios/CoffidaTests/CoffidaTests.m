@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface CoffidaTests : XCTestCase
+@interface CoffiDaTests : XCTestCase
 
 @end
 
-@implementation CoffidaTests
+@implementation CoffiDaTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {
