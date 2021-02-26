@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "Coffida-tvOS.app"
-               BlueprintName = "Coffida-tvOS"
-               ReferencedContainer = "container:Coffida.xcodeproj">
+               BuildableName = "CoffiDa-tvOS.app"
+               BlueprintName = "CoffiDa-tvOS"
+               ReferencedContainer = "container:CoffiDa.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "Coffida-tvOSTests.xctest"
-               BlueprintName = "Coffida-tvOSTests"
-               ReferencedContainer = "container:Coffida.xcodeproj">
+               BuildableName = "CoffiDa-tvOSTests.xctest"
+               BlueprintName = "CoffiDa-tvOSTests"
+               ReferencedContainer = "container:CoffiDa.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "Coffida-tvOS.app"
-            BlueprintName = "Coffida-tvOS"
-            ReferencedContainer = "container:Coffida.xcodeproj">
+            BuildableName = "CoffiDa-tvOS.app"
+            BlueprintName = "CoffiDa-tvOS"
+            ReferencedContainer = "container:CoffiDa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "Coffida-tvOS.app"
-            BlueprintName = "Coffida-tvOS"
-            ReferencedContainer = "container:Coffida.xcodeproj">
+            BuildableName = "CoffiDa-tvOS.app"
+            BlueprintName = "CoffiDa-tvOS"
+            ReferencedContainer = "container:CoffiDa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

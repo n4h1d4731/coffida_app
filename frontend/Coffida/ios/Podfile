@@ -3,14 +3,12 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'Coffida' do
+target 'CoffiDa' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
 
-  pod 'RNCPicker', :path => '../node_modules/@react-native-picker/picker'
-
-  target 'CoffidaTests' do
+  target 'CoffiDaTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -25,10 +23,10 @@ target 'Coffida' do
   end
 end
 
-target 'Coffida-tvOS' do
-  # Pods for Coffida-tvOS
+target 'CoffiDa-tvOS' do
+  # Pods for CoffiDa-tvOS
 
-  target 'Coffida-tvOSTests' do
+  target 'CoffiDa-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end
